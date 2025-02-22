@@ -264,13 +264,16 @@ class ExamPerformance:
 #arg status umbenannt in passed für bessere verständnis
 
 class charts:
-    def __init__(self, chart_type="line", x_values=10, y_values=None, chart_color="#003B00", chart_title=None):
+    def __init__(self, chart_type="line", y_values=None, average_grade=0, pie_chart_values=None):
         self.chart_type = chart_type
-        self.x_values = x_values
+        self.x_values = 10
         self.y_values = y_values
-        self.chart_color = chart_color
-        self.chart_title = chart_title
+        self.chart_color = "#003B00"
+        self.chart_title = ""
         self.y_ticks = range(0, 7)
+        self.avg_grade_line = False
+        self.average_grade = average_grade
+        self.pie_chart_values = pie_chart_values
 
         if self.chart_type == "line":
             fig, ax = plt.subplots(figsize=(10, 5), layout="constrained")
@@ -292,7 +295,21 @@ class charts:
             ax.set_xticklabels([])
             #Chart Title
             ax.set_title(self.chart_title, fontsize=18, color=self.chart_color)
+            #Average Grade Line On = True or Off = False
+            if self.avg_grade_line == True:
+                ax.axhline(self.average_grade, color="blue", linestyle="--", linewidth=2)
 
         if self.chart_type == "pie":
-            pass
+            labels = ("Done", "In Progress", "Open")
+            sizes = self.pie_chart_values
+            fig, ax = plt.subplots()
+            #Background invisible
+            fig.patch.set_alpha(0)
+            ax.set_facecolor("none")
+
+            ax.pie(sizes, labels=labels, autopct='%1.1f%%', colors=["#008F11", "#92e5a1", "#A5FFFF"], pctdistance=0.4,
+                   labeldistance=0.6, explode=(0.1, 0, 0), shadow=True, startangle=90, radius=1.2, textprops={'fontsize': 8})
+
+
+
 
