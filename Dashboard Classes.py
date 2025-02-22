@@ -263,22 +263,36 @@ class ExamPerformance:
 #Lieber dataclass verwenden da nicht komplex und nur zwei Methoden?
 #arg status umbenannt in passed für bessere verständnis
 
+class charts:
+    def __init__(self, chart_type="line", x_values=10, y_values=None, chart_color="#003B00", chart_title=None):
+        self.chart_type = chart_type
+        self.x_values = x_values
+        self.y_values = y_values
+        self.chart_color = chart_color
+        self.chart_title = chart_title
+        self.y_ticks = range(0, 7)
 
-grade_list = [1.7, 2.0, 1.0, 1.3, 1.7, 2.3, 1.9, 2.2, 2.0, 1.0]
+        if self.chart_type == "line":
+            fig, ax = plt.subplots(figsize=(10, 5), layout="constrained")
+            ax.plot(self.x_values, self.y_values, self.chart_color)
+            #Background invisible
+            fig.patch.set_alpha(0)
+            ax.set_facecolor("none")
+            #Right Axis and Top Axis invisible
+            ax.spines["top"].set_visible(False)
+            ax.spines["right"].set_visible(False)
+            #Style of Bottom and Left Axis
+            ax.spines["bottom"].set_color(self.chart_color)
+            ax.spines["left"].set_color(self.chart_color)
+            ax.spines["bottom"].set_linewidth(2)
+            ax.spines["left"].set_linewidth(2)
+            ax.set_xticks(self.x_values)
+            ax.set_yticks(self.y_ticks)
+            ax.tick_params(axis="both", colors=self.chart_color, labelsize=14, length=10, width=2)
+            ax.set_xticklabels([])
+            #Chart Title
+            ax.set_title(self.chart_title, fontsize=18, color=self.chart_color)
 
-fig, ax = plt.subplots(figsize=(10, 5), layout="constrained")
-ax.plot(range(len(grade_list)), grade_list, "#003B00")
-fig.patch.set_alpha(0)
-ax.set_facecolor("none")
-ax.spines["top"].set_visible(False)
-ax.spines["right"].set_visible(False)
-ax.spines["bottom"].set_color("#003B00")
-ax.spines["left"].set_color("#003B00")
-ax.spines["bottom"].set_linewidth(2)
-ax.spines["left"].set_linewidth(2)
-ax.set_title("AVG-Grade-Distribution")
-ax.set_xticks(range(len(grade_list)))
-ax.set_yticks(range(0,7))
-ax.tick_params(axis="both", colors="#003B00", labelsize=14, length=10, width=2)
-ax.set_xticklabels([])
-plt.show()
+        if self.chart_type == "pie":
+            pass
+
