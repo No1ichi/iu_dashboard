@@ -263,3 +263,12 @@ class ExamPerformance:
 #Lieber dataclass verwenden da nicht komplex und nur zwei Methoden?
 #arg status umbenannt in passed für bessere verständnis
 
+
+grade_list = [1.7, 2.0, 1.0, 1.3, 1.7, 2.3, 1.9, 2.2, 2.0, 1.0]
+
+fix, ax = plt.subplots(figsize=(10, 5), layout="constrained")
+ax.plot(len(grade_list), grade_list)
+ax.set_xlabel("Anzahl")
+ax.set_ylabel("Note")
+ax.set_title("AVG-Grade-Distribution")
+plt.show()
