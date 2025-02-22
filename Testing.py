@@ -3,4 +3,3 @@ class University:
         self.university_name = university_name
         self.university_location = university_location
 
-    
