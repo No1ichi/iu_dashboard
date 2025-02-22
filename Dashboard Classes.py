@@ -2,6 +2,8 @@ import json
 from dataclasses import dataclass
 from typing import Optional
 from datetime import datetime, date, timedelta
+import matplotlib.pyplot as plt
+
 
 class JSONFile:
     def __init__(self, filename: str, default_type: str = "dict"):
