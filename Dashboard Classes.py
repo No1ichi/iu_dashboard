@@ -266,9 +266,19 @@ class ExamPerformance:
 
 grade_list = [1.7, 2.0, 1.0, 1.3, 1.7, 2.3, 1.9, 2.2, 2.0, 1.0]
 
-fix, ax = plt.subplots(figsize=(10, 5), layout="constrained")
-ax.plot(len(grade_list), grade_list)
-ax.set_xlabel("Anzahl")
-ax.set_ylabel("Note")
+fig, ax = plt.subplots(figsize=(10, 5), layout="constrained")
+ax.plot(range(len(grade_list)), grade_list, "#003B00")
+fig.patch.set_alpha(0)
+ax.set_facecolor("none")
+ax.spines["top"].set_visible(False)
+ax.spines["right"].set_visible(False)
+ax.spines["bottom"].set_color("#003B00")
+ax.spines["left"].set_color("#003B00")
+ax.spines["bottom"].set_linewidth(2)
+ax.spines["left"].set_linewidth(2)
 ax.set_title("AVG-Grade-Distribution")
+ax.set_xticks(range(len(grade_list)))
+ax.set_yticks(range(0,7))
+ax.tick_params(axis="both", colors="#003B00", labelsize=14, length=10, width=2)
+ax.set_xticklabels([])
 plt.show()
