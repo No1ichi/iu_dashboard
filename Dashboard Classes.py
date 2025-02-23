@@ -264,7 +264,7 @@ class ExamPerformance:
 #arg status umbenannt in passed für bessere verständnis
 
 class charts:
-    def __init__(self, chart_type="line", y_values=None, average_grade=0, pie_chart_values=None):
+    def __init__(self, chart_type="line", y_values=None, average_grade=0, pie_chart_values=None, remaining_weeks_semester=None):
         self.chart_type = chart_type
         self.x_values = 10
         self.y_values = y_values
@@ -274,6 +274,8 @@ class charts:
         self.avg_grade_line = False
         self.average_grade = average_grade
         self.pie_chart_values = pie_chart_values
+        self.total_weeks_semester = 26
+        self.remaining_weeks_semester = remaining_weeks_semester
 
         if self.chart_type == "line":
             fig, ax = plt.subplots(figsize=(10, 5), layout="constrained")
@@ -310,6 +312,30 @@ class charts:
             ax.pie(sizes, labels=labels, autopct='%1.1f%%', colors=["#008F11", "#92e5a1", "#A5FFFF"], pctdistance=0.4,
                    labeldistance=0.6, explode=(0.1, 0, 0), shadow=True, startangle=90, radius=1.2, textprops={'fontsize': 8})
 
+        if self.chart_type == "pie70":
+            fig, ax = plt.subplots()
+            # Total weeks = 70% from Pie-Charts
+            remaining_converting_for_pie_chart = 70 / 26 * self.remaining_weeks_semester
+            passed_converting_for_pie_chart = 70 - remaining_converting_for_pie_chart
 
 
+            size = 0.3
+            #values outer ring - [invisible 15%, red-range, yellow-range, green-range, invisible 15%]
+            vals_o = [15, 3, 10, 57, 15]
+            #values inner ring - [invisible 15%, green-range, grey-range, invisible 15%]
+            #green-range + grey-range := 70%!
+            vals_i = [15, remaining_converting_for_pie_chart, passed_converting_for_pie_chart, 15]
+
+
+            #Specs and Style outer ring
+            ax.pie(vals_o, radius=1, colors=["none", "yellow", "red", "#003B00", "none"],
+                   wedgeprops=dict(width=0.05, edgecolor='none'),startangle=270)
+            #Specs and Style inner ring
+            ax.pie(vals_i, radius=0.92, colors=["none", "0.2", "#003B00", "none"],
+                   wedgeprops=dict(width=size, edgecolor='none'),startangle=270)
+            #Background invisible
+            fig.patch.set_alpha(0)
+            ax.set_facecolor("none")
+
+            ax.set(aspect="equal")
 
