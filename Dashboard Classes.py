@@ -328,7 +328,7 @@ class charts:
 
 
             #Specs and Style outer ring
-            ax.pie(vals_o, radius=1, colors=["none", "yellow", "red", "#003B00", "none"],
+            ax.pie(vals_o, radius=1, colors=["none", "red", "yellow", "#003B00", "none"],
                    wedgeprops=dict(width=0.05, edgecolor='none'),startangle=270)
             #Specs and Style inner ring
             ax.pie(vals_i, radius=0.92, colors=["none", "0.2", "#003B00", "none"],
