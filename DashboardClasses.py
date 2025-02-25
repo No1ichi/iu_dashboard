@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 class University:
     name: str
     street: str
-    zip_code: str
+    zip_code: int
     town: str
     students = []
     course_of_study = []
