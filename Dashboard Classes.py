@@ -339,3 +339,9 @@ class charts:
 
             ax.set(aspect="equal")
 
+
+#class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
+#    def __init__(self, *args, obj=None, **kwargs):
+#        super().__init__(*args, **kwargs)
+#        self.setupUi(self)
+#Das wird die Klasse für die in QT Creator erstelle GUI
