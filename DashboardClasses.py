@@ -35,15 +35,6 @@ class University:
         """Entfernt einen Studenten aus der Liste der Studierenden"""
         self.students.remove(student)
 
-#Optional könnte ich noch town: str = " " machen, damit town ein optionales argument wird
-#und dann durch gegebene PLZ automatisch die town heraussuchen und ausgeben?
-
-#nutzung von dataclass, da einfache Klasse die vorrangig nur Daten speichert und wenige Methoden hat. dataclass ist
-#kompakter, normale Klasse wird nicht unbedingt benötigt
-#keine speziellen Methoden für get_university_name und get_university_location, da jetziger Zugriff durch zum Beispiel
-#university.name einfacher ist und durch direkten zugriff wird klar, auf welches Attribut man zugreift
-#Methoden add_student und remove_student ergänzt, um Aggregation zu Klasse Student zu verdeutlichen/einzubauen
-
 @dataclass
 class Student:
     name: str
@@ -63,11 +54,6 @@ class Student:
         if self.learning_streaks is None:
             return "Keine Lerndaten vorhanden"
         print(self.learning_streaks)
-
-#auch wieder dataclass, da nur ein paar Daten gespeichert werden sollen und sonst fast keine Methoden gebraucht werden
-#Optional eingesetzt, da sonst None nicht funktioniert. Erklärung:
-#Normale Klasse mit None-Werten         Nein, Python erlaubt None standardmäßig.
-#dataclass mit None als Standardwert	Ja, weil Typ-annotationen in dataclass geprüft werden.
 
 class Lernstatistik:
     def __init__(self, student_name):
@@ -95,16 +81,6 @@ class Lernstatistik:
     @property
     def best_streak(self):
         return self._best_streak
-
-#Ich werde Wahrscheinlich noch eine Klasse brauchen für die GUI bzw. für den Kalender auf dem ich auswählen kann an welchen Tagen ich gelernt habe und wann nicht.
-#Aus dieser JSON Datei lese ich dann meine daten aus dem Dictionary ab. Das Dictionary wird folgendes Format haben KEY:Timestamp VALUE:True oder False
-
-#Altenativer Plan! Nachteil, ich muss jeden Tag in das Dashboard rein schauen und angeben, ob ich gelernt habe oder nicht. If gelernt then lerncounter +1, wenn nicht, dann wird lerncounter
-#wieder auf null gesetzt. Dabei wird der Counter noch verglichen mit best_streak und ersetzt diesen, falls er größer ist als best_streak
-
-#Verwendung von property um current_streak und best_streak zu privatisieren bzw vor direktem Zugriff zu schützen, aber trotzdem die Möglichkeit schnell darauf zuzugreifen
-#und es sieht aus wie ein direkter zugriff
-#umbenennung von winning_streak zu best_streak für besseres verständlichkeit
 
 class CourseOfStudy:
     def __init__(self, name, num_semesters, ects_points):
@@ -207,9 +183,6 @@ class ExamPerformance:
         else:
             return "No Grade Available"
 
-#Lieber dataclass verwenden da nicht komplex und nur zwei Methoden?
-#arg status umbenannt in passed für bessere verständnis
-
 class charts:
     def __init__(self, chart_type="line", y_values=None, average_grade=0, pie_chart_values=None, remaining_weeks_semester=None):
         self.chart_type = chart_type
@@ -285,10 +258,3 @@ class charts:
             ax.set_facecolor("none")
 
             ax.set(aspect="equal")
-
-
-#class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
-#    def __init__(self, *args, obj=None, **kwargs):
-#        super().__init__(*args, **kwargs)
-#        self.setupUi(self)
-#Das wird die Klasse für die in QT Creator erstelle GUI
