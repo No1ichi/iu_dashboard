@@ -6,18 +6,19 @@ from MainWindow import Ui_MainWindow
 from DashboardClasses import charts
 
 #Größer AVG-Grade Line-Chart - Daten sind nur zu Testzwecken
-line_chart_avg_grade_big = charts("line", [1,2,2,1.4,5,1.3,2.3,4,2.3,3.3])
+line_chart_avg_grade_big = charts("line", [1,2,2,1.4,5,1.3,2.3,4,2.3,3.3], average_grade=2.4, avg_grade_line=True)
 line_chart_avg_grade_big.fig.subplots_adjust(left=0.06, right=0.99, top=0.95, bottom=0.05)
 #Course Status Pie-Chart - Daten sind nur zu Testzwecken
 pie_chart_course_status = charts("pie", pie_chart_values=[5,5,40])
 pie_chart_course_status.fig.subplots_adjust(left=0.01, right=0.99, top=0.95, bottom=0.01)
 #Kleiner AVG-Grade Line-Chart - Daten sind nur zu Testzwecken
 line_chart_avg_grade_small = charts("line", [1,2,2,1.4,5,1.3,2.3,4,2.3,3.3])
-line_chart_avg_grade_small.fig = Figure(figsize=(1, 0.5), dpi=100)
-line_chart_avg_grade_small.fig.subplots_adjust(left=0.01, right=0.99, top=0.95, bottom=0.05)
+#line_chart_avg_grade_small.fig = Figure(figsize=(0.1, 0.05), dpi=100)
+line_chart_avg_grade_small.set_opacity(0.3)
+line_chart_avg_grade_small.fig.subplots_adjust(left=0.2, right=0.8, top=0.8, bottom=0.2)
 #Remaining Weeks Pie Chart - Daten sind nur zu Testzwecken
 remaining_weeks_pie_chart = charts("pie70", remaining_weeks_semester=22)
-remaining_weeks_pie_chart.fig.subplots_adjust(left=0.001, right=0.999, top=0.95, bottom=0.05)
+remaining_weeks_pie_chart.fig.subplots_adjust(left=0.001, right=0.999, top=0.999, bottom=0.001)
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):

@@ -195,6 +195,7 @@ class charts(FigureCanvasQTAgg):
                  chart_type="line",
                  y_values=None,
                  average_grade=0,
+                 avg_grade_line=False,
                  pie_chart_values=None,
                  remaining_weeks_semester=None,
                  parent: QWidget = None
@@ -210,8 +211,8 @@ class charts(FigureCanvasQTAgg):
         self.x_values = list(range(len(self.y_values)))
         self.chart_color = "#003B00"
         self.chart_title = ""
-        self.y_ticks = range(0, 7)
-        self.avg_grade_line = False
+        self.y_ticks = [1, 2, 3, 4, 5, 6]
+        self.avg_grade_line = avg_grade_line
         self.average_grade = average_grade
         self.pie_chart_values = pie_chart_values
         self.total_weeks_semester = 26
@@ -248,9 +249,8 @@ class charts(FigureCanvasQTAgg):
         ax.tick_params(axis="both", colors=self.chart_color, labelsize=14, length=10, width=2)
         ax.set_xticklabels([])  # Optional: X-Achsenbeschriftungen leer
         ax.set_title(self.chart_title, fontsize=18, color=self.chart_color)
-
         # Durchschnittslinie (optional)
-        if self.avg_grade_line:
+        if self.avg_grade_line == True:
             ax.axhline(self.average_grade, color="blue", linestyle="--", linewidth=2)
 
     def plot_pie_chart(self):
@@ -306,3 +306,23 @@ class charts(FigureCanvasQTAgg):
         )
 
         ax.set(aspect="equal")
+
+    def set_opacity(self, alpha=0.5):
+        """Einstellung der Transparenz von Chart und Achsen"""
+        ax = self.axes
+        #Opacity für Chart-Linie/Graph
+        for line in ax.get_lines():
+            line.set_alpha(alpha)
+        #Opacity für X-Achse und Y-Achse
+        for spine in ["left", "bottom"]:
+            ax.spines[spine].set_alpha(alpha)
+        #Opacity für Y-Achsen-Werte
+        for label in ax.get_yticklabels():
+            label.set_alpha(alpha)
+        #Opacity für Achsen-Striche "ticks"
+        for tick in ax.xaxis.get_major_ticks():
+            tick.tick1line.set_alpha(alpha)
+        for tick in ax.yaxis.get_major_ticks():
+            tick.tick1line.set_alpha(alpha)
+
+        self.draw()
