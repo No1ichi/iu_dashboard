@@ -1,4 +1,4 @@
-from PyQt6 import QtWidgets
+from PyQt6 import QtWidgets, QtCore
 from PyQt6.QtWidgets import QMainWindow
 from matplotlib.figure import Figure
 
@@ -38,17 +38,36 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         #Einbetten von MPL-Widget in frame_pie_chart
         layout.addWidget(pie_chart_course_status)
 
+        #Layout für MPL-Insert Weeks Left Pie-Chart
+        layout = QtWidgets.QVBoxLayout(self.frame_3)
+        self.frame_3.setLayout(layout)
+        #Einbetten von MPL-Widget in frame_3
+        layout.addWidget(remaining_weeks_pie_chart)
+
         #Layout für MPL-Insert AVG-Grades Line Chart Small
         layout = QtWidgets.QVBoxLayout(self.frame_avg_grades_chart_small)
         self.frame_avg_grades_chart_small.setLayout(layout)
         #Einbetten von MPL-Widget in frame_3
         layout.addWidget(line_chart_avg_grade_small)
 
-        #Layout für MPL-Insert Weeks Left Pie-Chart
-        layout = QtWidgets.QVBoxLayout(self.frame_3)
-        self.frame_3.setLayout(layout)
-        #Einbetten von MPL-Widget in frame_3
-        layout.addWidget(remaining_weeks_pie_chart)
+        #Überlagerndes QLabel für Durchschnittsnote über AVG Grade Chart Small
+        overlay_label = QtWidgets.QLabel("1.5", parent=self.frame_avg_grades_chart_small)
+        overlay_label.setStyleSheet("""
+            font: 700 60pt \"Graduate\";\n
+            color: rgba(49, 149, 43, 1);
+            background-color: rgba(49, 149, 43, 0);
+            """)
+        overlay_label.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+        overlay_label.resize(self.frame_avg_grades_chart_small.size())
+        overlay_label.setAutoFillBackground(False)
+        overlay_label.raise_()
+        overlay_label.setGeometry(self.frame_avg_grades_chart_small.rect())
+        def update_overlay_size(event):
+            overlay_label.setGeometry(self.frame_avg_grades_chart_small.rect())
+            event.accept()
+        self.frame_avg_grades_chart_small.resizeEvent = update_overlay_size
+
+
 
 
 
