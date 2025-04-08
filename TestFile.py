@@ -11,15 +11,14 @@ matplotlib.use("QtAgg")
 
 
 class charts(FigureCanvasQTAgg):
-    def __init__(
-        self,
-        chart_type="line",
-        y_values=None,
-        average_grade=0,
-        pie_chart_values=None,
-        remaining_weeks_semester=None,
-        parent: QWidget = None
-    ):
+    def __init__(self,
+                 chart_type="line",
+                 y_values=None,
+                 average_grade=0,
+                 pie_chart_values=None,
+                 remaining_weeks_semester=None,
+                 parent: QWidget = None
+                 ):
         self.fig = Figure(figsize=(10, 5), dpi=100)
         self.axes = self.fig.add_subplot(111)
         super().__init__(self.fig)
@@ -97,14 +96,19 @@ class charts(FigureCanvasQTAgg):
     def plot_pie70_chart(self):
         ax = self.axes
         ax.clear()
+        #Total weeks = 70% from Pie-Charts
         remaining = self.remaining_weeks_semester or 0
         remaining_converted = 70 / self.total_weeks_semester * remaining
         passed_converted = 70 - remaining_converted
 
         size = 0.3
+        #values outer ring - [invisible 15%, red-range, yello-range, green-range, invisible 15%]
         vals_o = [15, 3, 10, 57, 15]
+        #values inner ring - [invisible 15%, green-range, grey-range, invisible 15%]
+        #green-range + grey-range := 70%!
         vals_i = [15, remaining_converted, passed_converted, 15]
 
+        #Specs and Style outer ring
         ax.pie(
             vals_o,
             radius=1,
@@ -112,7 +116,7 @@ class charts(FigureCanvasQTAgg):
             wedgeprops=dict(width=0.05, edgecolor='none'),
             startangle=270
         )
-
+        #Specs and Style inner ring
         ax.pie(
             vals_i,
             radius=0.92,
@@ -127,7 +131,7 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        sc = charts("line", [1,2,3])
+        sc = charts("line", [1,2,3, 5])
         self.setCentralWidget(sc)
 
 app = QApplication(sys.argv)
