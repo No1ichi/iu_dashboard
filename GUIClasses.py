@@ -1,8 +1,12 @@
 from PyQt6 import QtWidgets, QtCore
-from PyQt6.QtWidgets import QMainWindow
+from PyQt6.QtWidgets import QMainWindow, QDialog
 from matplotlib.figure import Figure
 
 from MainWindow import Ui_MainWindow
+from ui_widget_addcourse import Ui_AddCourse
+from ui_widget_addgrade import Ui_AddGrade
+from ui_widget_addsemester import Ui_AddSemester
+from ui_widget_adduserdata import Ui_NewUserData
 from DashboardClasses import charts
 
 #Größer AVG-Grade Line-Chart - Daten sind nur zu Testzwecken
@@ -20,6 +24,29 @@ line_chart_avg_grade_small.fig.subplots_adjust(left=0.2, right=0.8, top=0.8, bot
 remaining_weeks_pie_chart = charts("pie70", remaining_weeks_semester=22)
 remaining_weeks_pie_chart.fig.subplots_adjust(left=0.001, right=0.999, top=0.999, bottom=0.001)
 
+#Dialogklasse Add Course
+class AddCourseDialog(QDialog, Ui_AddCourse):
+    def __init__(self):
+        super().__init__()
+        self.setupUi(self)
+
+#Dialogklasse Add Grade
+class AddGradeDialog(QDialog, Ui_AddGrade):
+    def __init__(self):
+        super().__init__()
+        self.setupUi(self)
+
+#Dialogklasse Add Semester
+class AddSemesterDialog(QDialog, Ui_AddSemester):
+    def __init__(self):
+        super().__init__()
+        self.setupUi(self)
+
+#Dialogklasse Add User Data
+class AddUserDataDialog(QDialog, Ui_NewUserData):
+    def __init__(self):
+        super().__init__()
+        self.setupUi(self)
 
 class MainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self, *args, **kwargs):
@@ -66,6 +93,27 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             overlay_label.setGeometry(self.frame_avg_grades_chart_small.rect())
             event.accept()
         self.frame_avg_grades_chart_small.resizeEvent = update_overlay_size
+
+        #PushButtons Verknüpfung zu Dialogs
+        self.pushButton_add_course.clicked.connect(self.open_add_course_dialog)
+        self.pushButton_add_grade.clicked.connect(self.open_add_grade_dialog)
+        self.pushButton_add_semester.clicked.connect(self.open_add_semester_dialog)
+        self.pushButton_add_user_data.clicked.connect(self.open_add_user_data_dialog)
+
+    #Funktionen zum öffnen und arbeiten mit den Dialogs
+    def open_add_course_dialog(self):
+        dialog = AddCourseDialog()
+        result = dialog.exec()
+    def open_add_grade_dialog(self):
+        dialog = AddGradeDialog()
+        result = dialog.exec()
+    def open_add_semester_dialog(self):
+        dialog = AddSemesterDialog()
+        result = dialog.exec()
+    def open_add_user_data_dialog(self):
+        dialog = AddUserDataDialog()
+        result = dialog.exec()
+
 
 
 
