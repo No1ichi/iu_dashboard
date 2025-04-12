@@ -1,12 +1,5 @@
-#import os
-#import sys
-#from PyQt6.QtWidgets import QApplication
-#from PyQt6 import uic
-#
-#basedir = os.path.dirname(__file__)
-#
-#app = QApplication(sys.argv)
-#
-#window = uic.loadUi(os.path.join(basedir, "mainwindow.ui"))
-#window.show()
-#app.exec()
+total_semester = 6
+
+semesters_list = [str(nr) for nr in range(1, total_semester+1)]
+
+print(semesters_list)

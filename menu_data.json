@@ -1,0 +1,77 @@
+{
+  "universities": [
+    {
+      "university_name": "",
+      "university_street": "",
+      "university_city": ""
+    },
+    {
+      "university_name": "IU Internationale Hochschule",
+      "university_street": "Juri-Gagarin-Ring 152",
+      "university_city": "99084 Erfurt"
+    }
+  ],
+  "course_of_studies": ["","Angewandte Künstliche Intelligenz"],
+  "angewandte_kuenstliche_intelligenz":
+  {
+    "ects_points": 180,
+    "semester": 6,
+    "courses_amount": 34,
+    "courses": [
+      "Artificial Intelligence",
+      "Einführung in das wissenschaftliche Arbeiten für IT und Technik",
+      "Einführung in die Programmierung mit Python",
+      "Mathematik: Analysis",
+      "Kollaboratives Arbeiten",
+      "Statistik - Wahrscheinlichkeit und deskriptive Statistik",
+      "Projekt: Objektorientierte und funktionale Programmierung mit Python",
+      "Mathematik: Lineare Algebra",
+      "Interkulturelle und ethische Handlungskompetenzen",
+      "Statistik - Schließende Statistik",
+      "Cloud Computing",
+      "Cloud Programming",
+      "Maschinelles Lernen - Supervised Learning",
+      "Maschinelles Lernen - Unsupervised Learning und Feature Engineering",
+      "Einführung in Computer Vision",
+      "Einführung in das Reinforcement Learning",
+      "Projekt: Computer Vision",
+      "Neuronale Netze und Deep Learning",
+      "Einführung in NLP",
+      "Projekt: NLP",
+      "Data Science Software Engineering",
+      "Projekt: Vom Modell zum Produktvertrieb",
+      "Einführung in Datenschutz und IT-Sicherheit",
+      "Seminar: Ethische Fragen der Data Science",
+      "User Experience",
+      "UX-Projekt",
+      "Projekt: Edge AI",
+      "Einführung in die Robotik",
+      "Projekt: Agiles Projektmanagement",
+      "Einführung in die Robotik 2",
+      "User Experience 2",
+      "Autonomous Driving",
+      "Robotics und Automatisierung",
+      "Data Engineer",
+      "Digitale Signalverarbeitung und Sensortechnologie",
+      "Datenbankentwickler",
+      "Business Intelligence",
+      "Data Analyst",
+      "Augmented, Mixed und Virtual Reality",
+      "Bachelorarbeit",
+      "International Marketing and Branding",
+      "Angewandter Vertrieb",
+      "Supply-Chain-Management",
+      "IT-Projekt- und -Architekturmanagement",
+      "Psychologie der Mensch-Computer-Interaktion",
+      "Fremdsprache Englisch",
+      "Fremdsprache Französisch",
+      "Fremdsprache Italienisch",
+      "Fremdsprache Spanisch",
+      "Studium Generale I und II",
+      "Microsoft ERP- Dynamics 365 Business Central - Functional Consultant",
+      "SAP - SAP S/4HANA Business Process Integration - Application Associate",
+      "Karriere-Entwicklung"
+    ],
+    "exam_type": ["Klausur", "Hausarbeit", "Advanced Workbook"]
+  }
+}

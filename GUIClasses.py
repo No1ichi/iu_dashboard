@@ -1,5 +1,8 @@
+import json
+from json import JSONDecodeError
+
 from PyQt6 import QtWidgets, QtCore
-from PyQt6.QtWidgets import QMainWindow, QDialog
+from PyQt6.QtWidgets import QMainWindow, QDialog, QMessageBox
 from matplotlib.figure import Figure
 
 from MainWindow import Ui_MainWindow
@@ -24,29 +27,102 @@ line_chart_avg_grade_small.fig.subplots_adjust(left=0.2, right=0.8, top=0.8, bot
 remaining_weeks_pie_chart = charts("pie70", remaining_weeks_semester=22)
 remaining_weeks_pie_chart.fig.subplots_adjust(left=0.001, right=0.999, top=0.999, bottom=0.001)
 
-#Dialogklasse Add Course
-class AddCourseDialog(QDialog, Ui_AddCourse):
-    def __init__(self):
-        super().__init__()
-        self.setupUi(self)
-
 #Dialogklasse Add Grade
 class AddGradeDialog(QDialog, Ui_AddGrade):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
 
+#Dialogklasse Add Course
+class AddCourseDialog(QDialog, Ui_AddCourse):
+    def __init__(self):
+        super().__init__()
+        self.setupUi(self)
+        self.load_data()
+
+    def load_data(self):
+        try:
+            with open("menu_data.json", "r") as file:
+                all_data = json.load(file)
+
+                #Verfügbare Kurse extrahieren
+                course_data = all_data.get("angewandte_kuenstliche_intelligenz", [])
+                available_courses = course_data.get("courses", [])
+                course_list = [course for course in available_courses]
+
+                #Prüfungsarten extrahieren
+                available_exam_types = course_data.get("exam_type", [])
+                exam_type_list = [examtype for examtype in available_exam_types]
+
+                self.comboBox_CourseName.addItems(course_list)
+                self.comboBox_ExamType.addItems(exam_type_list)
+
+        except FileNotFoundError:
+            ErrorMessage(self, "File not Fount")
+        except json.JSONDecodeError:
+            ErrorMessage(self, "File-Decoding Error")
+
 #Dialogklasse Add Semester
 class AddSemesterDialog(QDialog, Ui_AddSemester):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
+        self.load_data()
+
+    def load_data(self):
+        try:
+            with open("menu_data.json", "r") as file:
+                all_data = json.load(file)
+
+                #Semesteranzahl extrahieren
+                course_data = all_data.get("angewandte_kuenstliche_intelligenz", [])
+                total_semester = course_data.get("semester", 0)
+                semesters_list = [str(nr) for nr in range(1, total_semester+1)]
+
+                self.comboBox_SemesterNumber.addItems(semesters_list)
+
+        except FileNotFoundError:
+            ErrorMessage(self, "File not Fount")
+        except json.JSONDecodeError:
+            ErrorMessage(self, "File-Decoding Error")
 
 #Dialogklasse Add User Data
 class AddUserDataDialog(QDialog, Ui_NewUserData):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
+        self.load_data()
+
+    def load_data(self):
+        try:
+            with open("menu_data.json", "r") as file:
+                all_data = json.load(file)
+
+                #Universitätennamen extrahieren
+                university_data = all_data.get("universities", [])
+                universities = [name["university_name"] for name in university_data]
+                #Angebotene Kurse extrahieren
+                courses = all_data.get("course_of_studies", [])
+
+                self.comboBox_University.addItems(universities)
+                self.comboBox_CourseOfStudy.addItems(courses)
+        except FileNotFoundError:
+            ErrorMessage(self, "File not Fount")
+        except json.JSONDecodeError:
+            ErrorMessage(self, "File-Decoding Error")
+
+class ErrorMessage():
+    def __init__(self, parent, warning):
+        self.warning = warning
+        self.show_error(parent)
+    def show_error(self, parent):
+        QMessageBox.critical(
+            parent,
+            "Fehler",
+            self.warning,
+            QMessageBox.StandardButton.Ok,
+            )
+
 
 class MainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self, *args, **kwargs):
