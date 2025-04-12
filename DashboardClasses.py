@@ -46,8 +46,8 @@ class University:
 class Student:
     name: str
     matrikelnummer: int
-    university: Optional[str] = None
-    course_of_study: Optional[str] = None
+    university: Optional[object] = None
+    course_of_study: Optional[object] = None
     learning_streaks: Optional[object] = None
 
     def get_university(self):
@@ -61,8 +61,13 @@ class Student:
         if self.learning_streaks is None:
             return "Keine Lerndaten vorhanden"
         print(self.learning_streaks)
+    def get_course_of_study(self):
+        """Gibt den aktuellen Studiengang wieder, soweit vorhanden"""
+        if self.course_of_study is None:
+            return f"{self.name} ist in keinem Studiengang eingeschrieben"
+        return self.course_of_study
 
-class Lernstatistik:
+class LearningTracker:
     def __init__(self, student_name):
         self._current_streak = 0
         self._best_streak = 0
@@ -71,11 +76,11 @@ class Lernstatistik:
     def __str__(self):
         return f"Calculated current streak: {self.current_streak}\nCalculated best streak: {self._best_streak}"
 
-    def calculating_streak(self, gelernt: bool):
+    def calculating_streak(self, learned: bool):
         """Berechnet die dauer des aktuellen Streaks, falls der Streak unterbrochen wird, wird der Counter wieder auf 0 gesetzt.
         Ist der aktuelle Streak größer als der beste Streak, wird der beste Streak entsprechend aktualisiert"""
         #Achtung! Variable "gelernt" noch nicht definiert!
-        if gelernt == True:
+        if learned == True:
             self._current_streak += 1
             if self._current_streak > self._best_streak:
                 self._best_streak = self._current_streak
@@ -96,6 +101,8 @@ class CourseOfStudy:
         self.ects_points = ects_points
         self.semesters = []
         self.students = []
+        self.current_avg_grade = None
+        self.last_avg_grade = None
 
     def get_average_grade(self, ):
         """Berechnet die Durchschnittsnote auf Basis aller bisher erhaltenen Noten"""
