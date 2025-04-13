@@ -33,12 +33,39 @@ class AddGradeDialog(QDialog, Ui_AddGrade):
         super().__init__()
         self.setupUi(self)
 
+        self.buttonBox.accepted.connect(lambda: print("accepted"))
+        self.buttonBox.rejected.connect(lambda: print("rejected"))
+
+        self.comboBox_Passed.addItems(["Pass", "Fail"])
+
 #Dialogklasse Add Course
 class AddCourseDialog(QDialog, Ui_AddCourse):
-    def __init__(self):
+    def __init__(self, study_data):
         super().__init__()
         self.setupUi(self)
         self.load_data()
+        self.study_data = study_data
+
+        self.buttonBox.accepted.connect(self.save_data)
+        self.buttonBox.rejected.connect(self.reject)
+
+    def save_data(self):
+        try:
+            with open("studydata.json", "r") as file:
+                all_data = json.load(file)
+                course_list = all_data.get("Courses", [])
+                course_list.append(self.comboBox_CourseName.currentText())
+
+            self.study_data.update("Courses", course_list)
+            self.study_data.update("ECTS-Points_"+self.comboBox_CourseName.currentText(), self.lineEdit_ECTSPoints.text())
+            self.study_data.update("Exam-Type_"+self.comboBox_CourseName.currentText(), self.comboBox_ExamType.currentText())
+
+            self.accept()
+
+        except FileNotFoundError:
+            ErrorMessage(self, "File not found")
+        except json.JSONDecodeError:
+            ErrorMessage(self, "File decoding error")
 
     def load_data(self):
         try:
@@ -64,10 +91,19 @@ class AddCourseDialog(QDialog, Ui_AddCourse):
 
 #Dialogklasse Add Semester
 class AddSemesterDialog(QDialog, Ui_AddSemester):
-    def __init__(self):
+    def __init__(self, study_data):
         super().__init__()
         self.setupUi(self)
         self.load_data()
+        self.study_data = study_data
+
+        self.buttonBox.accepted.connect(self.save_data)
+        self.buttonBox.rejected.connect(self.reject)
+
+    def save_data(self):
+        self.study_data.update("Semester", self.comboBox_SemesterNumber.currentText())
+        self.study_data.update("Start Date", self.dateEdit_StartDate.date().toString("yyyy-MM-dd"))
+        self.accept()
 
     def load_data(self):
         try:
@@ -88,10 +124,22 @@ class AddSemesterDialog(QDialog, Ui_AddSemester):
 
 #Dialogklasse Add User Data
 class AddUserDataDialog(QDialog, Ui_NewUserData):
-    def __init__(self):
+    def __init__(self, user_data):
         super().__init__()
         self.setupUi(self)
         self.load_data()
+        self.user_data = user_data
+
+        self.buttonBox.accepted.connect(self.save_data)
+        self.buttonBox.rejected.connect(self.reject)
+
+    def save_data(self):
+        self.user_data.update("University", self.comboBox_University.currentText()),
+        self.user_data.update("Student Name", self.lineEdit_StudentName.text()),
+        self.user_data.update("Student Number", self.lineEdit_StudentNumber.text()),
+        self.user_data.update("Course of Study", self.comboBox_CourseOfStudy.currentText())
+        self.accept()
+
 
     def load_data(self):
         try:
@@ -111,6 +159,8 @@ class AddUserDataDialog(QDialog, Ui_NewUserData):
         except json.JSONDecodeError:
             ErrorMessage(self, "File-Decoding Error")
 
+
+
 class ErrorMessage():
     def __init__(self, parent, warning):
         self.warning = warning
@@ -125,9 +175,11 @@ class ErrorMessage():
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, user_data, study_data, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.setupUi(self)
+        self.user_data = user_data
+        self.study_data = study_data
 
         #Layout für MPL-Insert AVG-Grades Line Chart Big
         layout = QtWidgets.QVBoxLayout(self.frame_avg_grades_chart_big)
@@ -177,17 +229,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.pushButton_add_user_data.clicked.connect(self.open_add_user_data_dialog)
 
     #Funktionen zum öffnen und arbeiten mit den Dialogs
-    def open_add_course_dialog(self):
-        dialog = AddCourseDialog()
-        result = dialog.exec()
     def open_add_grade_dialog(self):
         dialog = AddGradeDialog()
         result = dialog.exec()
+    def open_add_course_dialog(self):
+        dialog = AddCourseDialog(self.study_data)
+        result = dialog.exec()
     def open_add_semester_dialog(self):
-        dialog = AddSemesterDialog()
+        dialog = AddSemesterDialog(self.study_data)
         result = dialog.exec()
     def open_add_user_data_dialog(self):
-        dialog = AddUserDataDialog()
+        dialog = AddUserDataDialog(self.user_data)
         result = dialog.exec()
 
 

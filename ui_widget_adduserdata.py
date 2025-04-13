@@ -66,7 +66,7 @@ class Ui_NewUserData(object):
         self.DataInput.setWidget(3, QtWidgets.QFormLayout.ItemRole.FieldRole, self.comboBox_CourseOfStudy)
         self.verticalLayout.addLayout(self.DataInput)
         self.buttonBox = QtWidgets.QDialogButtonBox(parent=NewUserData)
-        self.buttonBox.setStyleSheet("background-color: rgb(246, 245, 244);")
+        self.buttonBox.setStyleSheet("background-color: rgb(192, 191, 188);")
         self.buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.StandardButton.Cancel|QtWidgets.QDialogButtonBox.StandardButton.Ok)
         self.buttonBox.setObjectName("buttonBox")
         self.verticalLayout.addWidget(self.buttonBox, 0, QtCore.Qt.AlignmentFlag.AlignHCenter)

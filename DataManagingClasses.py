@@ -1,4 +1,5 @@
 import json
+import os
 
 class JSONFile:
     def __init__(self, filename: str, default_type: str = "dict"):
@@ -11,8 +12,11 @@ class JSONFile:
 
     def new_file(self):
         """Erstellt eine leere JSON-Datei mit {} oder [] je nach default_type."""
-        default_data = {} if self.default_type == "dict" else []
-        self.save(default_data)
+        if not os.path.exists(self.filename):
+            default_data = {} if self.default_type == "dict" else []
+            self.save(default_data)
+        else:
+            pass
 
     def save(self, data):
         """Speichert Daten in die JSON-Datei."""

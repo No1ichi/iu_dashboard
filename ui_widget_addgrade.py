@@ -56,7 +56,7 @@ class Ui_AddGrade(object):
         self.DataInput.setWidget(1, QtWidgets.QFormLayout.ItemRole.FieldRole, self.comboBox_Passed)
         self.verticalLayout.addLayout(self.DataInput)
         self.buttonBox = QtWidgets.QDialogButtonBox(parent=AddGrade)
-        self.buttonBox.setStyleSheet("background-color: rgb(246, 245, 244);")
+        self.buttonBox.setStyleSheet("background-color: rgb(192, 191, 188);")
         self.buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.StandardButton.Cancel|QtWidgets.QDialogButtonBox.StandardButton.Ok)
         self.buttonBox.setObjectName("buttonBox")
         self.verticalLayout.addWidget(self.buttonBox, 0, QtCore.Qt.AlignmentFlag.AlignHCenter|QtCore.Qt.AlignmentFlag.AlignVCenter)
@@ -67,6 +67,6 @@ class Ui_AddGrade(object):
     def retranslateUi(self, AddGrade):
         _translate = QtCore.QCoreApplication.translate
         AddGrade.setWindowTitle(_translate("AddGrade", "Add Grade"))
-        self.label_Modul.setText(_translate("AddGrade", "Modul"))
+        self.label_Modul.setText(_translate("AddGrade", "Course"))
         self.label_Passed.setText(_translate("AddGrade", "Passed"))
         self.label_Grade.setText(_translate("AddGrade", "Grade"))
