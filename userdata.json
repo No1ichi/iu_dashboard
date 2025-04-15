@@ -1,6 +1,10 @@
 {
-    "University": "",
-    "Student Name": "",
-    "Student Number": "",
-    "Course of Study": ""
+    "University": [
+        "IU Internationale Hochschule",
+        "Juri-Gagarin-Ring 152",
+        "99084 Erfurt"
+    ],
+    "Student Name": "Bastian Schwab",
+    "Student Number": "IU123456",
+    "Course of Study": "Angewandte K\u00fcnstliche Intelligenz"
 }

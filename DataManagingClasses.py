@@ -81,3 +81,10 @@ class InputHandler:
             return True
         except ValueError:
             return False
+
+
+#JSON-Files zur Datenspeicherung
+user_data = JSONFile("userdata.json")
+study_data = JSONFile("studydata.json")
+exam_data = JSONFile("examdata.json")
+menu_data = JSONFile("menu_data.json")

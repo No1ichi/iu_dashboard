@@ -1,14 +1,10 @@
 {
   "universities": [
     {
-      "university_name": "",
-      "university_street": "",
-      "university_city": ""
+      "university": [" ", " ", " "]
     },
     {
-      "university_name": "IU Internationale Hochschule",
-      "university_street": "Juri-Gagarin-Ring 152",
-      "university_city": "99084 Erfurt"
+      "university": ["IU Internationale Hochschule", "Juri-Gagarin-Ring 152", "99084 Erfurt"]
     }
   ],
   "course_of_studies": ["","Angewandte Künstliche Intelligenz"],
