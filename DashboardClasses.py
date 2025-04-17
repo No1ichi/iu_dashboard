@@ -6,22 +6,21 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
 from PyQt6.QtWidgets import QWidget
+from DataManagingClasses import menu_data, exam_data, study_data, user_data
 
 matplotlib.use("QtAgg")
-
 
 @dataclass
 class University:
     name: str
     street: str
-    zip_code: int
     town: str
     students = []
     course_of_study = []
 
     def info(self):
         """Gibt vollständige Adresse der Universität wieder"""
-        return f"""{self.name}\n{self.street}\n{self.zip_code} {self.town}"""
+        return f"""{self.name}\n{self.street}\n{self.town}"""
 
     def add_student(self, new_student):
         """Fügt einen Studenten zur Liste der studierenden der Universität hinzu und fügt diese Universität zum Studenten hinzu"""
@@ -42,10 +41,11 @@ class University:
         """Entfernt einen Studenten aus der Liste der Studierenden"""
         self.students.remove(student)
 
+
 @dataclass
 class Student:
     name: str
-    matrikelnummer: int
+    student_number: int
     university: Optional[object] = None
     course_of_study: Optional[object] = None
     learning_streaks: Optional[object] = None
@@ -94,6 +94,7 @@ class LearningTracker:
     def best_streak(self):
         return self._best_streak
 
+
 class CourseOfStudy:
     def __init__(self, name, num_semesters, ects_points):
         self.name = name
@@ -101,16 +102,32 @@ class CourseOfStudy:
         self.ects_points = ects_points
         self.semesters = []
         self.students = []
+        self.all_grades = None
         self.current_avg_grade = None
         self.last_avg_grade = None
 
-    def get_average_grade(self, ):
+    def get_average_grade(self, data):
         """Berechnet die Durchschnittsnote auf Basis aller bisher erhaltenen Noten"""
-        pass
+        grade_data = data.load()
+        all_grades = [float(value[1]) for value in grade_data.values() if value[0] == "Passed"]
+        avg_grade = sum(all_grades) / (len(all_grades) if len(all_grades) > 0 else 1)
+        self.all_grades = all_grades
+        self.current_avg_grade = round(avg_grade, 2)
+        return self.current_avg_grade
 
-    def get_grade_difference(self, ):
+    def get_last_avg_grade(self, data):
+        grade_data = data.load()
+        all_grades = [float(value[1]) for value in grade_data.values() if value[0] == "Passed"]
+        all_grades_except_last = all_grades[:-1]
+        last_avg_grade = (sum(all_grades_except_last)
+                          / (len(all_grades_except_last)
+                             if len(all_grades_except_last) > 0 else 1))
+        self.last_avg_grade = round(last_avg_grade, 2)
+        return self.last_avg_grade
+
+    def get_grade_difference(self):
         """Berechnet die Differenz zwischen alter Durchschnittsnote und neuer Durchschnittsnote"""
-        pass
+        return round(self.last_avg_grade - self.current_avg_grade, 2)
 
     def add_semester(self, semester):
         """Fügt dem Studiengang ein Semester hinzu"""
@@ -127,12 +144,13 @@ class CourseOfStudy:
         else:
             print("Student ist schon in einem anderen Studiengang eingeschrieben")
 
+
 class Semester:
-    def __init__(self, semester_number, start_date):
+    def __init__(self, semester_number, start_date_string):
         self.semester_number = semester_number
-        self.start_date = datetime.strptime(start_date, "%Y.%m.%d")
-        self.end_date = start_date + timedelta(months=6)
-        self.modules = []
+        self.start_date = date.fromisoformat(start_date_string)
+        self.end_date = self.start_date + timedelta(weeks=26)
+        self.courses = []
 
     def get_remaining_weeks(self):
         """Gibt die verbleibenden Wochen des Semesters wieder"""
@@ -142,19 +160,27 @@ class Semester:
         else:
             return 0
 
+    def get_passed_weeks(self):
+        """Gibt die vergangenen Wochen des Semesters wieder"""
+        passed_weeks = (date.today() - self.start_date).days // 7
+        if passed_weeks < 26:
+            return passed_weeks
+        else:
+            return 26
+
     def add_module(self, module):
         """Fügt ein Modul zu einem Semester hinzu"""
-        if module not in self.modules:
-            self.modules.append(module)
+        if course not in self.courses:
+            self.courses.append(course)
         else:
             return "Dieses Modul ist schon vorhanden"
 
     def __repr__(self):
-        return f"Semester Number {self.semester_number}, Start date {self.start_date}, End date {self.end_date}, Modules {self.modules}"
+        return f"Semester Number {self.semester_number}, Start date {self.start_date}, End date {self.end_date}, Modules {self.courses}"
     def __str__(self):
-        return f"Semester Number {self.semester_number}, Start date {self.start_date}, End date {self.end_date}, Modules {self.modules}"
+        return f"Semester Number {self.semester_number}, Start date {self.start_date}, End date {self.end_date}, Modules {self.courses}"
 
-class Modul:
+class Course:
     def __init__(self, name, semester, ects_points, status, exam_type):
         self.name = name
         self.semester = semester
@@ -289,7 +315,7 @@ class charts(FigureCanvasQTAgg):
         passed_converted = 70 - remaining_converted
 
         size = 0.3
-        #values outer ring - [invisible 15%, red-range, yello-range, green-range, invisible 15%]
+        #values outer ring - [invisible 15%, red-range, yellow-range, green-range, invisible 15%]
         vals_o = [15, 3, 10, 57, 15]
         #values inner ring - [invisible 15%, green-range, grey-range, invisible 15%]
         #green-range + grey-range := 70%!
@@ -333,3 +359,66 @@ class charts(FigureCanvasQTAgg):
             tick.tick1line.set_alpha(alpha)
 
         self.draw()
+
+    def update_charts(self, **kwargs):
+        if self.chart_type =="line":
+            self.y_values = kwargs.get("y_values", [])
+            self.average_grade = kwargs.get("average_grade", 0)
+            self.avg_grade_line = kwargs.get("avg_grade_line", False)
+            self.x_values = list(range(len(self.y_values)))
+            self.plot_line_chart()
+        elif self.chart_type == "pie":
+            self.pie_chart_values = kwargs.get("pie_chart_values", [0, 0, 0])
+            self.plot_pie_chart()
+        elif self.chart_type == "pie70":
+            self.remaining_weeks_semester = kwargs.get("remaining_weeks_semester", 0)
+            self.plot_pie70_chart()
+
+        self.draw()
+
+
+loaded_user_data = user_data.load()
+loaded_study_data = study_data.load()
+loaded_menu_data = menu_data.load()
+
+# Erstellen der University-Instanz aus vorhandenen Daten oder Standard-Daten falls keine Daten vorhanden sind
+if loaded_user_data != {}:
+    loaded_uni_data = loaded_user_data.get("University", ["name", "street", "town"])
+    uni_data = University(loaded_uni_data[0], loaded_uni_data[1], loaded_uni_data[2])
+else:
+    uni_data = University("N/A", "N/A", "N/A")
+
+# Erstellen der Student-Instanz aus vorhandenen Daten oder Standrad-Daten falls keine Daten vorhanden sind
+if loaded_user_data != {}:
+    loaded_student_name = loaded_user_data.get("Student Name", "N/A")
+    loaded_student_number = loaded_user_data.get("Student Number", "N/A")
+    student_data = Student(loaded_student_name, loaded_student_number)
+else: student_data = Student("N/A", "N/A")
+
+# Erstellen der Semester-Instanz aus vorhandenen Daten oder Standrad-Daten falls keine Daten vorhanden sind
+if loaded_study_data != {}:
+    loaded_semester_number = loaded_study_data.get("Semester", "0")
+    loaded_semester_start_date = loaded_study_data.get("Start Date", "2024-01-01")
+    semester_data = Semester(loaded_semester_number, loaded_semester_start_date)
+else:
+    semester_data = Semester("N/A", "2024-01-01")
+
+# Erstellen der CourseOfStudy-Instanz aus vorhandenen Daten oder Standrad-Daten falls keine Daten vorhanden sind
+if loaded_user_data != {}:
+    loaded_CoS_name = loaded_user_data.get("Course of Study", "N/A")
+    if loaded_CoS_name not in loaded_menu_data:
+        print("Dieser Studiengang ist nicht in den Stammdaten enthalten!")
+    else:
+        loaded_num_semesters = loaded_menu_data.get(loaded_CoS_name).get("semester")
+        loaded_ects_points = loaded_menu_data.get(loaded_CoS_name).get("ects_points")
+    course_of_study_data = CourseOfStudy(loaded_CoS_name, loaded_num_semesters, loaded_ects_points)
+else: course_of_study_data = CourseOfStudy("N/A", 0, 0)
+
+#Erstmal nach und nach alle vorhandenen Klassen erstellen und schon soweit einbauen wie möglich.
+#Danach muss ich die Klassen entsprechend anpassen, um Code von GUIClasses in die Klassen auszulagern als Methoden,
+# die ich dann wieder in GUIClasses implementiere.
+#Ich habe als letztes die CourseOfStudy Klasse instanziiert. Bis jetzt habe ich die ganzen Listen und verbindungen
+# Aggregation und soweiter noch nicht beachtet. Also zum Beispiel add_student oder add_semester bei CourseOfStudy
+#muss erstmal schauen, ob ich das brauche und für was...
+
+
