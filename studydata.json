@@ -5,19 +5,17 @@
         "Einf\u00fchrung in die Programmierung mit Python",
         "Mathematik: Analysis",
         "Kollaboratives Arbeiten",
-        "Kollaboratives Arbeiten",
         "Statistik - Wahrscheinlichkeit und deskriptive Statistik",
         "Projekt: Objektorientierte und funktionale Programmierung mit Python",
-        "Interkulturelle und ethische Handlungskompetenzen",
-        "Artificial Intelligence",
-        "Einf\u00fchrung in Datenschutz und IT-Sicherheit"
+        "Mathematik: Lineare Algebra",
+        "Interkulturelle und ethische Handlungskompetenzen"
     ],
-    "Semester": "3",
-    "Start Date": "2025-02-27",
+    "Semester": "1",
+    "Start Date": "2025-04-10",
     "ECTS-Points_Artificial Intelligence": "5",
-    "Exam-Type_Artificial Intelligence": "Klausur",
+    "Exam-Type_Artificial Intelligence": "",
     "ECTS-Points_Einf\u00fchrung in das wissenschaftliche Arbeiten f\u00fcr IT und Technik": "5",
-    "Exam-Type_Einf\u00fchrung in das wissenschaftliche Arbeiten f\u00fcr IT und Technik": "Advanced Workbook",
+    "Exam-Type_Einf\u00fchrung in das wissenschaftliche Arbeiten f\u00fcr IT und Technik": "Klausur",
     "ECTS-Points_Einf\u00fchrung in die Programmierung mit Python": "5",
     "Exam-Type_Einf\u00fchrung in die Programmierung mit Python": "Klausur",
     "ECTS-Points_Mathematik: Analysis": "5",
@@ -28,8 +26,8 @@
     "Exam-Type_Statistik - Wahrscheinlichkeit und deskriptive Statistik": "Klausur",
     "ECTS-Points_Projekt: Objektorientierte und funktionale Programmierung mit Python": "5",
     "Exam-Type_Projekt: Objektorientierte und funktionale Programmierung mit Python": "Klausur",
+    "ECTS-Points_Mathematik: Lineare Algebra": "5",
+    "Exam-Type_Mathematik: Lineare Algebra": "Klausur",
     "ECTS-Points_Interkulturelle und ethische Handlungskompetenzen": "5",
-    "Exam-Type_Interkulturelle und ethische Handlungskompetenzen": "Klausur",
-    "ECTS-Points_Einf\u00fchrung in Datenschutz und IT-Sicherheit": "5",
-    "Exam-Type_Einf\u00fchrung in Datenschutz und IT-Sicherheit": "Klausur"
+    "Exam-Type_Interkulturelle und ethische Handlungskompetenzen": "Klausur"
 }

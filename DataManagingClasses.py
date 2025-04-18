@@ -12,9 +12,10 @@ class JSONFile:
 
     def new_file(self):
         """Erstellt eine leere JSON-Datei mit {} oder [] je nach default_type."""
-        if not os.path.exists(self.filename):
+        if not os.path.exists(self.filename) or os.path.getsize(self.filename) == 0:
             default_data = {} if self.default_type == "dict" else []
             self.save(default_data)
+            print(f"Initialisiere neue JSON-Datei: {self.filename}")
         else:
             pass
 
@@ -28,8 +29,12 @@ class JSONFile:
         try:
             with open(self.filename, "r", encoding="utf-8") as file:
                 return json.load(file)
-        except (json.JSONDecodeError, FileNotFoundError):
-            # Falls die Datei beschädigt oder leer ist, wird sie neu erstellt
+        except FileNotFoundError:
+            print("File not Fount. New File will be created")
+            self.new_file()
+            return {} if self.default_type == "dict" else []
+        except json.JSONDecodeError:
+            print("File-Decoding Error. New File will be created")
             self.new_file()
             return {} if self.default_type == "dict" else []
 
@@ -88,3 +93,4 @@ user_data = JSONFile("userdata.json")
 study_data = JSONFile("studydata.json")
 exam_data = JSONFile("examdata.json")
 menu_data = JSONFile("menu_data.json")
+

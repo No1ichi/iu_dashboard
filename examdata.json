@@ -1,7 +1,7 @@
 {
     "Artificial Intelligence": [
         "Passed",
-        "1"
+        "3"
     ],
     "Einf\u00fchrung in das wissenschaftliche Arbeiten f\u00fcr IT und Technik": [
         "Passed",
@@ -13,26 +13,10 @@
     ],
     "Mathematik: Analysis": [
         "Passed",
-        "1"
+        "2"
     ],
     "Kollaboratives Arbeiten": [
-        "Passed",
-        "1"
-    ],
-    "Projekt: Objektorientierte und funktionale Programmierung mit Python": [
-        "Passed",
-        "5"
-    ],
-    "Interkulturelle und ethische Handlungskompetenzen": [
-        "Passed",
-        "1"
-    ],
-    "Statistik - Wahrscheinlichkeit und deskriptive Statistik": [
-        "Passed",
-        "1"
-    ],
-    "Einf\u00fchrung in Datenschutz und IT-Sicherheit": [
-        "Passed",
-        "3"
+        "Failed",
+        "6"
     ]
 }

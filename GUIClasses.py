@@ -11,24 +11,21 @@ from ui_widget_addcourse import Ui_AddCourse
 from ui_widget_addgrade import Ui_AddGrade
 from ui_widget_addsemester import Ui_AddSemester
 from ui_widget_adduserdata import Ui_NewUserData
-from DashboardClasses import charts, uni_data, student_data, semester_data, course_of_study_data
+from DashboardClasses import charts, uni_data, student_data, semester_data, course_of_study_data, course_data
 from DataManagingClasses import menu_data, exam_data, study_data, user_data
 from datetime import date
 
-#Course Status Pie-Chart
-courses_in_progress = len(study_data.load().get("Courses", []))
-all_data = exam_data.load()
-courses_done = len([key for key, value in all_data.items() if "Passed" in value])
-courses_open = (
-        menu_data.load().get("Angewandte Künstliche Intelligenz", 99).get("courses_amount")
-        -
-        (courses_done + courses_in_progress)
-)
+# Course Status Pie-Chart
+course_data.update_data(study_data, exam_data, user_data)
+amt_courses_done = len(course_data.get_courses_finished())
+amt_courses_open = len(course_data.get_courses_in_progress())
+amt_all_courses = len(course_data.get_all_courses(course_of_study_data.name)) - (amt_courses_open + amt_courses_done)
 
-pie_chart_course_status = charts("pie", pie_chart_values=[courses_done,courses_in_progress,courses_open])
+pie_chart_course_status = charts("pie", pie_chart_values=[
+    amt_courses_done,amt_courses_open,amt_all_courses])
 pie_chart_course_status.fig.subplots_adjust(left=0.01, right=0.99, top=0.95, bottom=0.01)
 
-#Größer AVG-Grade Line-Chart
+# Großer AVG-Grade Line-Chart
 line_chart_avg_grade_big = charts(
     "line",
     course_of_study_data.all_grades,
@@ -38,14 +35,13 @@ line_chart_avg_grade_big = charts(
 line_chart_avg_grade_big.fig.subplots_adjust(left=0.06, right=0.99, top=0.95, bottom=0.05)
 
 
-#Kleiner AVG-Grade Line-Chart
+# Kleiner AVG-Grade Line-Chart
 line_chart_avg_grade_small = charts("line", course_of_study_data.all_grades)
-#line_chart_avg_grade_small.fig = Figure(figsize=(0.1, 0.05), dpi=100)
 line_chart_avg_grade_small.set_opacity(0.3)
 line_chart_avg_grade_small.fig.subplots_adjust(left=0.2, right=0.8, top=0.8, bottom=0.2)
 
 #Remaining Weeks Pie Chart
-remaining_weeks_pie_chart = charts("pie70", remaining_weeks_semester=semester_data.get_passed_weeks())
+remaining_weeks_pie_chart = charts("pie70", remaining_weeks_semester=semester_data.get_remaining_weeks())
 remaining_weeks_pie_chart.fig.subplots_adjust(left=0.001, right=0.999, top=0.999, bottom=0.001)
 
 #Dialogklasse Add Grade
@@ -79,7 +75,7 @@ class AddGradeDialog(QDialog, Ui_AddGrade):
         self.comboBox_Modul.addItems(available_courses)
 
 
-#Dialogklasse Add Course
+# Dialogklasse Add Course
 class AddCourseDialog(QDialog, Ui_AddCourse):
     def __init__(self, study_data):
         super().__init__()
@@ -91,46 +87,38 @@ class AddCourseDialog(QDialog, Ui_AddCourse):
         self.buttonBox.rejected.connect(self.reject)
 
     def save_data(self):
-        try:
-            with open("studydata.json", "r") as file:
-                all_data = json.load(file)
-                course_list = all_data.get("Courses", [])
-                course_list.append(self.comboBox_CourseName.currentText())
-
+        course_list = study_data.load().get("Courses", [])
+        if self.comboBox_CourseName.currentText() not in course_list:
+            course_list.append(self.comboBox_CourseName.currentText())
             self.study_data.update("Courses", course_list)
-            self.study_data.update("ECTS-Points_"+self.comboBox_CourseName.currentText(), self.lineEdit_ECTSPoints.text())
-            self.study_data.update("Exam-Type_"+self.comboBox_CourseName.currentText(), self.comboBox_ExamType.currentText())
+            self.study_data.update("ECTS-Points_" + self.comboBox_CourseName.currentText(),
+                                   self.lineEdit_ECTSPoints.text())
+            self.study_data.update("Exam-Type_" + self.comboBox_CourseName.currentText(),
+                                   self.comboBox_ExamType.currentText())
+        else:
+            pass
 
-            self.accept()
+        self.accept()
 
-        except FileNotFoundError:
-            ErrorMessage(self, "File not found")
-        except json.JSONDecodeError:
-            ErrorMessage(self, "File decoding error")
 
     def load_data(self):
-        try:
-            with open("menu_data.json", "r") as file:
-                all_data = json.load(file)
+        course_data.update_data(study_data, exam_data, user_data)
+        # Alle Kurse des Studiengangs auslesen
+        all_courses = course_data.get_all_courses(course_of_study_data.name)
+        # Kurse aus Kurs-Liste herausfiltern, die abgeschlossen oder in bearbeitung sind
+        filtered_courses = [
+            course for course in all_courses
+            if course not in course_data.get_courses_in_progress()
+               and course not in course_data.get_courses_finished()
+        ]
+        # Prüfungsarten extrahieren
+        exam_types = course_data.get_exam_types()
 
-                #Verfügbare Kurse extrahieren
-                course_data = all_data.get("Angewandte Künstliche Intelligenz", {})
-                available_courses = course_data.get("courses", [])
-                course_list = [course for course in available_courses]
+        self.comboBox_CourseName.addItems(filtered_courses)
+        self.comboBox_ExamType.addItems(exam_types)
 
-                #Prüfungsarten extrahieren
-                available_exam_types = course_data.get("exam_type", [])
-                exam_type_list = [examtype for examtype in available_exam_types]
 
-                self.comboBox_CourseName.addItems(course_list)
-                self.comboBox_ExamType.addItems(exam_type_list)
-
-        except FileNotFoundError:
-            ErrorMessage(self, "File not Fount")
-        except json.JSONDecodeError:
-            ErrorMessage(self, "File-Decoding Error")
-
-#Dialogklasse Add Semester
+# Dialogklasse Add Semester
 class AddSemesterDialog(QDialog, Ui_AddSemester):
     def __init__(self, study_data):
         super().__init__()
@@ -147,23 +135,15 @@ class AddSemesterDialog(QDialog, Ui_AddSemester):
         self.accept()
 
     def load_data(self):
-        try:
-            with open("menu_data.json", "r") as file:
-                all_data = json.load(file)
+        all_data = menu_data.load()
+        # Semesteranzahl extrahieren
+        course_data = all_data.get("Angewandte Künstliche Intelligenz", {})
+        total_semester = course_data.get("semester", 0)
+        semesters_list = [str(nr) for nr in range(1, total_semester + 1)]
 
-                #Semesteranzahl extrahieren
-                course_data = all_data.get("Angewandte Künstliche Intelligenz", {})
-                total_semester = course_data.get("semester", 0)
-                semesters_list = [str(nr) for nr in range(1, total_semester+1)]
+        self.comboBox_SemesterNumber.addItems(semesters_list)
 
-                self.comboBox_SemesterNumber.addItems(semesters_list)
-
-        except FileNotFoundError:
-            ErrorMessage(self, "File not Fount")
-        except json.JSONDecodeError:
-            ErrorMessage(self, "File-Decoding Error")
-
-#Dialogklasse Add User Data
+# Dialogklasse Add User Data
 class AddUserDataDialog(QDialog, Ui_NewUserData):
     def __init__(self, user_data, menu_data):
         super().__init__()
@@ -182,9 +162,8 @@ class AddUserDataDialog(QDialog, Ui_NewUserData):
         selected_university_list = None
 
         for entry in universities:
-            university = entry.get("university", [])
-            if university and university[0] == selected_university_name:
-                selected_university_list = university
+            if entry[0] == selected_university_name:
+                selected_university_list = entry
                 break
 
         if selected_university_list:
@@ -201,25 +180,15 @@ class AddUserDataDialog(QDialog, Ui_NewUserData):
 
 
     def load_data(self):
-        try:
-            with open("menu_data.json", "r") as file:
-                all_data = json.load(file)
+        main_data = menu_data.load()
+        # Universitätsnamen extrahieren
+        universities = main_data.get("universities", [])
+        university_names = [uni[0] for uni in universities]
+        # Angebotene Kurse extrahieren
+        all_courses = course_data.get_all_courses(course_of_study_data.name)
 
-                #Universitätennamen extrahieren
-                university_data = all_data.get("universities", [])
-                universities = [name["university"] for name in university_data]
-                university_names = [uni[0] for uni in universities]
-                #Angebotene Kurse extrahieren
-                courses = all_data.get("course_of_studies", [])
-
-                self.comboBox_University.addItems(university_names)
-                self.comboBox_CourseOfStudy.addItems(courses)
-
-        except FileNotFoundError:
-            ErrorMessage(self, "File not Fount")
-        except json.JSONDecodeError:
-            ErrorMessage(self, "File-Decoding Error")
-
+        self.comboBox_University.addItems(university_names)
+        self.comboBox_CourseOfStudy.addItems(all_courses)
 
 
 class ErrorMessage():
@@ -292,6 +261,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.pushButton_add_semester.clicked.connect(self.open_add_semester_dialog)
         self.pushButton_add_user_data.clicked.connect(self.open_add_user_data_dialog)
 
+        #Lade AVG-Grade Differenz in GUI
+        self.label_grade_move_pos.setText(str(course_of_study_data.get_grade_difference()))
+        self.label_grade_move_neg.setText(str(course_of_study_data.get_grade_difference()))
+
         #Lade User Data Studenname, Studentnummer in GUI
         self.label_input_student_name.setText(student_data.name)
         self.label_input_student_number.setText(student_data.student_number)
@@ -305,21 +278,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.label_semester_number_bottom_left.setText(semester_data.semester_number)
 
         #Lade Courses Completed Daten in GUI
-        completed_exams = []
-        all_data = self.exam_data.load()
-        for key in all_data:
-            if "Passed" in all_data.get(key):
-                completed_exams.append(key)
-
-        self.label_courses_completet_number_bottom_mid.setText(str(len(completed_exams)))
+        self.label_courses_completet_number_bottom_mid.setText(str(len(course_data.get_courses_finished())))
 
         #Lade Courses Open Daten in GUI
-        open_courses = self.menu_data.load().get("Angewandte Künstliche Intelligenz", 99).get("courses_amount") - len(completed_exams)
+        open_courses = (self.menu_data.load().get(course_of_study_data.name, 99).get("courses_amount")
+                        - len(course_data.get_courses_finished()))
         self.label_courses_open_number_bottom_right.setText(str(open_courses))
 
         #Lade Passed Weeks und Remaining Weeks in GUI (Label Top Right)
-        self.label_semester_counter_number_right.setText(str(semester_data.get_remaining_weeks()))
-        self.label_semester_counter_number_left.setText(str(semester_data.get_passed_weeks()))
+        self.label_semester_counter_number_right.setText(str(semester_data.get_passed_weeks()))
+        self.label_semester_counter_number_left.setText(str(semester_data.get_remaining_weeks()))
 
     #Resizing Methode für Overlay-Widget AVG-Grade links oben
     def update_overlay_size(self, event):
@@ -352,19 +320,19 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         if grade_dialog == True:
             #Update Courses Completed
-            new_completed_exams = []
-            new_data = self.exam_data.load()
-            for key in new_data:
-                if "Passed" in new_data.get(key):
-                    new_completed_exams.append(key)
-
-            self.label_courses_completet_number_bottom_mid.setText(str(len(new_completed_exams)))
+            course_data.update_data(study_data, exam_data, user_data)
+            self.label_courses_completet_number_bottom_mid.setText(str(len(course_data.get_courses_finished())))
 
             #Update Courses Open
-            new_open_courses = (self.menu_data.load().get(
-                "Angewandte Künstliche Intelligenz", 99).get("courses_amount") - len(new_completed_exams)
-                                )
+            new_open_courses = (self.menu_data.load().get(course_of_study_data.name, 99).get("courses_amount")
+                            - len(course_data.get_courses_finished()))
             self.label_courses_open_number_bottom_right.setText(str(new_open_courses))
+
+            # Update AVG-Grade Difference
+            course_of_study_data.get_average_grade(exam_data)
+            course_of_study_data.get_last_avg_grade(exam_data)
+            self.label_grade_move_pos.setText(str(course_of_study_data.get_grade_difference()))
+            self.label_grade_move_neg.setText(str(course_of_study_data.get_grade_difference()))
 
             #Update AVG-Grade Charts
             #Großer AVG-Grade Line-Chart
@@ -382,39 +350,27 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         if course_dialog == True:
             #Update Pie-Chart Course Status
-            new_courses_in_progress = len(self.study_data.load().get("Courses", []))
-            new_data = self.exam_data.load()
-            new_courses_done = len([key for key, value in new_data.items() if "Passed" in value])
-            new_courses_open = (
-                    self.menu_data.load().get("Angewandte Künstliche Intelligenz", {}).get("courses_amount")
-                    -
-                    (new_courses_done + new_courses_in_progress)
-            )
+            (course_data.update_data(study_data, exam_data, user_data))
+            new_amt_courses_done = len(course_data.get_courses_finished())
+            new_amt_courses_open = len(course_data.get_courses_in_progress())
+            new_amt_all_courses = len(course_data.get_all_courses(course_of_study_data.name)) - (amt_courses_open + amt_courses_done)
 
-            pie_chart_course_status.update_charts(pie_chart_values=[new_courses_done, new_courses_in_progress, new_courses_open])
+            pie_chart_course_status.update_charts(pie_chart_values=[
+                new_amt_courses_done,
+                new_amt_courses_open,
+                new_amt_all_courses
+            ])
 
 
         if semester_dialog == True:
-            updated_study_data = self.study_data.load()
-            #Update aktuelles Semester in GUI
-            self.label_semester_number_bottom_left.setText(updated_study_data.get("Semester", ""))
-            #Update Remaining Weeks Pie Chart
-            new_start_date_string = self.study_data.load().get("Start Date", str(date.today()))
-            new_start_date = date.fromisoformat(new_start_date_string)
-            today = date.today()
+            semester_data.update_data()
+            # Update aktuelles Semester in GUI
+            self.label_semester_number_bottom_left.setText(semester_data.semester_number)
+            # Update Remaining Weeks Pie Chart
+            remaining_weeks_pie_chart.update_charts(remaining_weeks_semester=semester_data.get_remaining_weeks())
 
-            delta = today - new_start_date  #
-            new_remaining_weeks = delta.days / 7
-            # Begrenzen auf maximale Semesterlänge, um Error-Code bei pie70 Chart erstellung zu verhindern
-            if new_remaining_weeks > 26:
-                new_remaining_weeks = 26
-            new_passed_weeks = 26 - new_remaining_weeks
-            remaining_weeks_pie_chart.update_charts(remaining_weeks_semester=new_passed_weeks)
-
-            new_rounded_remaining_weeks = int(round(new_remaining_weeks, 0))
-            new_rounded_passed_weeks = int(round(new_passed_weeks, 0))
-            self.label_semester_counter_number_right.setText(str(new_rounded_remaining_weeks))
-            self.label_semester_counter_number_left.setText(str(new_rounded_passed_weeks))
+            self.label_semester_counter_number_right.setText(str(semester_data.get_passed_weeks()))
+            self.label_semester_counter_number_left.setText(str(semester_data.get_remaining_weeks()))
 
         if user_dialog == True:
             updated_user_data = self.user_data.load()
@@ -427,11 +383,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.label_university_name.setText(university_data[0])
             self.label_university_street.setText(university_data[1])
             self.label_university_address.setText(university_data[2])
-
-
-
-
-
 
 
 

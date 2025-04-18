@@ -102,9 +102,9 @@ class CourseOfStudy:
         self.ects_points = ects_points
         self.semesters = []
         self.students = []
-        self.all_grades = None
-        self.current_avg_grade = None
-        self.last_avg_grade = None
+        self.all_grades = []
+        self.current_avg_grade = 0
+        self.last_avg_grade = 0
 
     def get_average_grade(self, data):
         """Berechnet die Durchschnittsnote auf Basis aller bisher erhaltenen Noten"""
@@ -157,6 +157,7 @@ class Semester:
         remaining_weeks = (self.end_date - date.today()).days // 7
         if remaining_weeks > 0:
             return remaining_weeks
+            print(remaining_weeks)
         else:
             return 0
 
@@ -165,15 +166,22 @@ class Semester:
         passed_weeks = (date.today() - self.start_date).days // 7
         if passed_weeks < 26:
             return passed_weeks
+            print(passed_weeks)
         else:
             return 26
 
-    def add_module(self, module):
+    def add_module(self, course):
         """Fügt ein Modul zu einem Semester hinzu"""
         if course not in self.courses:
             self.courses.append(course)
         else:
             return "Dieses Modul ist schon vorhanden"
+
+    def update_data(self):
+        self.start_date = date.fromisoformat(study_data.load().get("Start Date", "2024-01-01"))
+        self.semester_number = study_data.load().get("Semester", "0")
+        self.end_date = self.start_date + timedelta(weeks=26)
+
 
     def __repr__(self):
         return f"Semester Number {self.semester_number}, Start date {self.start_date}, End date {self.end_date}, Modules {self.courses}"
@@ -181,30 +189,48 @@ class Semester:
         return f"Semester Number {self.semester_number}, Start date {self.start_date}, End date {self.end_date}, Modules {self.courses}"
 
 class Course:
-    def __init__(self, name, semester, ects_points, status, exam_type):
-        self.name = name
-        self.semester = semester
-        self.ects_points = ects_points
-        self.status = status
-        self.exam_type = exam_type
-        self.exams = []
+    def __init__(self, menu_data):
+        self.menu_data = menu_data
+        self.study_data = None
+        self.exam_data = None
+        self.user_data = None
+        self.all_courses = []
+        self.courses_in_progress = []
+        self.courses_finished = []
+        self.exam_types = []
 
-    def add_exam(self, exam_performance):
-        """Fügt eine Prüfungsleistung zu dem Modul hinzu"""
-        if len(self.exams) < 3:
-            self.exams.append(exam_performance)
-        else:
-            return "Maximal 3 Prüfungen erlaubt"
+    def get_all_courses(self, course_of_study):
+        main_data = self.menu_data.load()
+        all_available_courses = main_data.get(course_of_study).get("courses")
+        self.all_courses = all_available_courses
+        return self.all_courses
 
-    def get_status(self):
-        """Gibt den aktuellen Bearbeitungsstatus des Moduls zurück"""
-        return self.status
+    def get_courses_in_progress(self):
+        load_exam_data = self.exam_data.load()
+        load_study_data = self.study_data.load()
+        open_course_data = load_study_data.get("Courses", [])
+        passed_courses = [key for key, value in load_exam_data.items() if value[0] == "Passed"]
+        for course in open_course_data:
+            if course not in passed_courses:
+                self.courses_in_progress.append(course)
+        return self.courses_in_progress
 
-    def __repr__(self):
-        return f"Name: {self.name}, ECTS-Punkte: {self.ects_points}, Status: {self.status}, Exam Type: {self.exam_type}, Number of Exams: " + str(len(self.exams))
+    def get_courses_finished(self):
+        load_exam_data = self.exam_data.load()
+        passed_courses = [key for key, value in load_exam_data.items() if value[0] == "Passed"]
+        return passed_courses
 
-    def __str__(self):
-        return f"Name: {self.name}, ECTS-Punkte: {self.ects_points}, Status: {self.status}, Exam Type: {self.exam_type}, Number of Exams: " + str(len(self.exams))
+    def update_data(self, new_study_data, new_exam_data, new_user_data):
+        self.study_data = new_study_data
+        self.exam_data = new_exam_data
+        self.user_data = new_user_data
+
+    def get_exam_types(self):
+        data = self.user_data.load()
+        course_of_study_name = data.get("Course of Study")
+        cos_data = menu_data.load().get(course_of_study_name)
+        exam_type_list = cos_data.get("exam_type")
+        return exam_type_list
 
 @dataclass
 class ExamPerformance:
@@ -403,7 +429,7 @@ if loaded_study_data != {}:
 else:
     semester_data = Semester("N/A", "2024-01-01")
 
-# Erstellen der CourseOfStudy-Instanz aus vorhandenen Daten oder Standrad-Daten falls keine Daten vorhanden sind
+# Erstellen der CourseOfStudy-Instanz aus vorhandenen Daten oder Standard-Daten falls keine Daten vorhanden sind
 if loaded_user_data != {}:
     loaded_CoS_name = loaded_user_data.get("Course of Study", "N/A")
     if loaded_CoS_name not in loaded_menu_data:
@@ -414,11 +440,17 @@ if loaded_user_data != {}:
     course_of_study_data = CourseOfStudy(loaded_CoS_name, loaded_num_semesters, loaded_ects_points)
 else: course_of_study_data = CourseOfStudy("N/A", 0, 0)
 
-#Erstmal nach und nach alle vorhandenen Klassen erstellen und schon soweit einbauen wie möglich.
+# Erstellen der Course-Instanz aus vorhandenen Daten oder Standard-Daten falls keine Daten vorhanden sind
+course_data = Course(menu_data)
+
+# Erstmal nach und nach alle vorhandenen Klassen erstellen und schon soweit einbauen wie möglich.
 #Danach muss ich die Klassen entsprechend anpassen, um Code von GUIClasses in die Klassen auszulagern als Methoden,
 # die ich dann wieder in GUIClasses implementiere.
 #Ich habe als letztes die CourseOfStudy Klasse instanziiert. Bis jetzt habe ich die ganzen Listen und verbindungen
 # Aggregation und soweiter noch nicht beachtet. Also zum Beispiel add_student oder add_semester bei CourseOfStudy
 #muss erstmal schauen, ob ich das brauche und für was...
+
+# ExamPerformance noch nicht bearbeitet. Sonst soweit alles implementiert. Die Verbindungen untereinander wie
+# schon oben beschrieben noch nicht bearbeitet.
 
 
