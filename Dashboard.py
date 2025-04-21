@@ -1,6 +1,8 @@
 import sys
 import os
 import json
+from datetime import date
+
 from PyQt6.QtWidgets import QApplication
 from GUIClasses import MainWindow, AddUserDataDialog, AddSemesterDialog, AddCourseDialog, AddGradeDialog
 from DataManagingClasses import user_data, exam_data, study_data, menu_data
@@ -30,8 +32,19 @@ def initialize_defaults():
             user_data.update("Student Number", "")
         if "Course of Study" not in user_data_file:
             user_data.update("Course of Study", "")
+        if "Learning Status" not in user_data_file:
+            user_data.update("Learning Status", False)
+        if "Learning Status Button" not in user_data_file:
+            user_data.update("Learning Status Button", False)
+        if "Learning Status Date" not in user_data_file:
+            user_data.update("Learning Status Date", "")
+        if "Current Streak" not in user_data_file:
+            user_data.update("Current Streak", 0)
+        if "Best Streak" not in user_data_file:
+            user_data.update("Best Streak", 0)
         else:
             pass
+
     # Initialisiere Default-Werte für examdata JSON-File
     if os.path.exists("data/examdata.json"):
         exam_data_file = exam_data.load()
@@ -39,6 +52,15 @@ def initialize_defaults():
             exam_data.update("", ["Status", 0])
         else:
             pass
+
+# Resetten des LearningTracker Times
+learning_track_data = user_data.load()
+lt_date = learning_track_data.get("Learning Status Date")
+if lt_date != date.today():
+    user_data.update("Learning Status", False)
+    user_data.update("Learning Status Button", False)
+else:
+    pass
 
 
 initialize_defaults()

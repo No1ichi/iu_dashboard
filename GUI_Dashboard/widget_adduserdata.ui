@@ -38,95 +38,130 @@
    <double>1.000000000000000</double>
   </property>
   <property name="styleSheet">
-   <string notr="true">background-color: rgb(6, 12, 10);</string>
+   <string notr="true">background-color: rgb(0, 0, 0);</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
+  <layout class="QVBoxLayout" name="verticalLayout_3">
    <item>
-    <layout class="QFormLayout" name="DataInput">
-     <item row="0" column="0">
-      <widget class="QLabel" name="label_University">
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QFrame" name="frame_2">
        <property name="styleSheet">
-        <string notr="true">font: 700 11pt &quot;Graduate&quot; ;
+        <string notr="true">background-color: rgb(6, 12, 10);</string>
+       </property>
+       <property name="frameShape">
+        <enum>QFrame::StyledPanel</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Raised</enum>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout_2">
+        <item>
+         <widget class="QLabel" name="label_University">
+          <property name="styleSheet">
+           <string notr="true">font: 700 11pt &quot;Graduate&quot; ;
 color: rgb(255, 255, 255);</string>
-       </property>
-       <property name="text">
-        <string>University</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="1">
-      <widget class="QComboBox" name="comboBox_University">
-       <property name="styleSheet">
-        <string notr="true">background-color: rgb(192, 191, 188);</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="0">
-      <widget class="QLabel" name="label_StudentName">
-       <property name="styleSheet">
-        <string notr="true">font: 700 11pt &quot;Graduate&quot; ;
+          </property>
+          <property name="text">
+           <string>University</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_StudentName">
+          <property name="styleSheet">
+           <string notr="true">font: 700 11pt &quot;Graduate&quot; ;
 color: rgb(255, 255, 255);</string>
-       </property>
-       <property name="text">
-        <string>Name</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="1">
-      <widget class="QLineEdit" name="lineEdit_StudentName">
-       <property name="styleSheet">
-        <string notr="true">background-color: rgb(246, 245, 244);</string>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-       <property name="placeholderText">
-        <string>First Name Last Name</string>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="0">
-      <widget class="QLabel" name="label_StudentNumber">
-       <property name="styleSheet">
-        <string notr="true">font: 700 11pt &quot;Graduate&quot; ;
+          </property>
+          <property name="text">
+           <string>Name</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_StudentNumber">
+          <property name="styleSheet">
+           <string notr="true">font: 700 11pt &quot;Graduate&quot; ;
 color: rgb(255, 255, 255);</string>
-       </property>
-       <property name="text">
-        <string>Student-Number</string>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="1">
-      <widget class="QLineEdit" name="lineEdit_StudentNumber">
-       <property name="styleSheet">
-        <string notr="true">background-color: rgb(246, 245, 244);</string>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="0">
-      <widget class="QLabel" name="label_CourseOfStudy">
-       <property name="styleSheet">
-        <string notr="true">font: 700 11pt &quot;Graduate&quot; ;
+          </property>
+          <property name="text">
+           <string>Student-Number</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_CourseOfStudy">
+          <property name="styleSheet">
+           <string notr="true">font: 700 11pt &quot;Graduate&quot; ;
 color: rgb(255, 255, 255);</string>
-       </property>
-       <property name="text">
-        <string>Course of Study</string>
-       </property>
+          </property>
+          <property name="text">
+           <string>Course of Study</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </widget>
      </item>
-     <item row="3" column="1">
-      <widget class="QComboBox" name="comboBox_CourseOfStudy">
+     <item>
+      <widget class="QFrame" name="frame">
        <property name="styleSheet">
-        <string notr="true">background-color: rgb(192, 191, 188);</string>
+        <string notr="true">background-color: rgb(6, 12, 10);</string>
        </property>
+       <property name="frameShape">
+        <enum>QFrame::StyledPanel</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Raised</enum>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout">
+        <item>
+         <widget class="QComboBox" name="comboBox_University">
+          <property name="styleSheet">
+           <string notr="true">background-color: rgb(192, 191, 188);
+color: rgb(0, 0, 0);</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="lineEdit_StudentName">
+          <property name="styleSheet">
+           <string notr="true">background-color: rgb(246, 245, 244);
+color: rgb(0, 0, 0);</string>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+          <property name="placeholderText">
+           <string>First Name Last Name</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="lineEdit_StudentNumber">
+          <property name="styleSheet">
+           <string notr="true">background-color: rgb(246, 245, 244);
+color: rgb(0, 0, 0);</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QComboBox" name="comboBox_CourseOfStudy">
+          <property name="styleSheet">
+           <string notr="true">background-color: rgb(192, 191, 188);
+color: rgb(0, 0, 0);</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </widget>
      </item>
     </layout>
    </item>
-   <item alignment="Qt::AlignHCenter">
+   <item alignment="Qt::AlignHCenter|Qt::AlignVCenter">
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="styleSheet">
-      <string notr="true">background-color: rgb(246, 245, 244);</string>
+      <string notr="true">background-color: rgb(246, 245, 244);
+color: rgb(0, 0, 0);</string>
      </property>
      <property name="standardButtons">
       <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>

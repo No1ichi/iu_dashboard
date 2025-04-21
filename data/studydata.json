@@ -4,10 +4,13 @@
         "Einf\u00fchrung in das wissenschaftliche Arbeiten f\u00fcr IT und Technik",
         "Einf\u00fchrung in die Programmierung mit Python",
         "Mathematik: Analysis",
-        "Kollaboratives Arbeiten"
+        "Kollaboratives Arbeiten",
+        "Statistik - Wahrscheinlichkeit und deskriptive Statistik",
+        "Projekt: Objektorientierte und funktionale Programmierung mit Python",
+        "Mathematik: Lineare Algebra"
     ],
     "Semester": "2",
-    "Start Date": "2025-04-01",
+    "Start Date": "2025-03-09",
     "ECTS-Points_Artificial Intelligence": "5",
     "Exam-Type_Artificial Intelligence": "Klausur",
     "ECTS-Points_Einf\u00fchrung in das wissenschaftliche Arbeiten f\u00fcr IT und Technik": "5",
@@ -17,5 +20,11 @@
     "ECTS-Points_Mathematik: Analysis": "5",
     "Exam-Type_Mathematik: Analysis": "Klausur",
     "ECTS-Points_Kollaboratives Arbeiten": "5",
-    "Exam-Type_Kollaboratives Arbeiten": "Klausur"
+    "Exam-Type_Kollaboratives Arbeiten": "Klausur",
+    "ECTS-Points_Statistik - Wahrscheinlichkeit und deskriptive Statistik": "5",
+    "Exam-Type_Statistik - Wahrscheinlichkeit und deskriptive Statistik": "Klausur",
+    "ECTS-Points_Projekt: Objektorientierte und funktionale Programmierung mit Python": "5",
+    "Exam-Type_Projekt: Objektorientierte und funktionale Programmierung mit Python": "Klausur",
+    "ECTS-Points_Mathematik: Lineare Algebra": "5",
+    "Exam-Type_Mathematik: Lineare Algebra": "Klausur"
 }

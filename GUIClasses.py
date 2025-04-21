@@ -12,7 +12,7 @@ from ui_widget_addcourse import Ui_AddCourse
 from ui_widget_addgrade import Ui_AddGrade
 from ui_widget_addsemester import Ui_AddSemester
 from ui_widget_adduserdata import Ui_NewUserData
-from DashboardClasses import charts, uni_data, student_data, semester_data, course_of_study_data, course_data
+from DashboardClasses import charts, uni_data, student_data, semester_data, course_of_study_data, course_data, learning_tracker
 from DataManagingClasses import menu_data, exam_data, study_data, user_data, input_handler
 from datetime import date
 
@@ -223,32 +223,32 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.exam_data = exam_data
         self.menu_data = menu_data
 
-        #Layout für MPL-Insert AVG-Grades Line Chart Big
+        # Layout für MPL-Insert AVG-Grades Line Chart Big
         layout = QtWidgets.QVBoxLayout(self.frame_avg_grades_chart_big)
         self.frame_avg_grades_chart_big.setLayout(layout)
-        #Einbetten von MPL-Widget in frame_avg_grades_chart_big
+        # Einbetten von MPL-Widget in frame_avg_grades_chart_big
         layout.addWidget(line_chart_avg_grade_big)
 
-        #Layout für MPL-Insert Course Status Pie Chart
+        # Layout für MPL-Insert Course Status Pie Chart
         layout = QtWidgets.QVBoxLayout(self.frame_pie_chart)
         self.frame_pie_chart.setLayout(layout)
-        #Einbetten von MPL-Widget in frame_pie_chart
+        # Einbetten von MPL-Widget in frame_pie_chart
         layout.addWidget(pie_chart_course_status)
 
-        #Layout für MPL-Insert Weeks Left Pie-Chart
+        # Layout für MPL-Insert Weeks Left Pie-Chart
         layout = QtWidgets.QVBoxLayout(self.frame_3)
         self.frame_3.setLayout(layout)
-        #Einbetten von MPL-Widget in frame_3
+        # Einbetten von MPL-Widget in frame_3
         layout.addWidget(remaining_weeks_pie_chart)
 
-        #Layout für MPL-Insert AVG-Grades Line Chart Small
+        # Layout für MPL-Insert AVG-Grades Line Chart Small
         layout = QtWidgets.QVBoxLayout(self.frame_avg_grades_chart_small)
         self.frame_avg_grades_chart_small.setLayout(layout)
-        #Einbetten von MPL-Widget in frame_3
+        # Einbetten von MPL-Widget in frame_3
         layout.addWidget(line_chart_avg_grade_small)
 
-        #Überlagerndes QLabel für Durchschnittsnote über AVG Grade Chart Small
-        #Lade AVG-Grade in GUI
+        # Überlagerndes QLabel für Durchschnittsnote über AVG Grade Chart Small
+        # Lade AVG-Grade in GUI
         self.overlay_label = QtWidgets.QLabel(
             str(course_of_study_data.get_average_grade(exam_data)),
             parent=self.frame_avg_grades_chart_small)
@@ -265,13 +265,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.frame_avg_grades_chart_small.resizeEvent = self.update_overlay_size
 
-        #PushButtons Verknüpfung zu Dialogs
+        # PushButtons Verknüpfung zu Dialogs
         self.pushButton_add_course.clicked.connect(self.open_add_course_dialog)
         self.pushButton_add_grade.clicked.connect(self.open_add_grade_dialog)
         self.pushButton_add_semester.clicked.connect(self.open_add_semester_dialog)
         self.pushButton_add_user_data.clicked.connect(self.open_add_user_data_dialog)
 
-        #Lade AVG-Grade Differenz in GUI
+        # Lade AVG-Grade Differenz in GUI
         self.label_grade_move_pos.setText(str(course_of_study_data.get_grade_difference()))
         self.label_grade_move_neg.setText(str(course_of_study_data.get_grade_difference()))
 
@@ -283,29 +283,72 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         else:
             self.set_arrow_visibility("none")
 
-        #Lade User Data Studenname, Studentnummer in GUI
+        # Lade User Data Studenname, Studentnummer in GUI
         self.label_input_student_name.setText(student_data.name)
         self.label_input_student_number.setText(student_data.student_number)
 
-        #Lade User Data Universtitätsadresse in GUI
+        # Lade User Data Universtitätsadresse in GUI
         self.label_university_name.setText(uni_data.name)
         self.label_university_street.setText(uni_data.street)
         self.label_university_address.setText(uni_data.town)
 
-        #Lade aktuelles Semester in GUI
+        # Lade aktuelles Semester in GUI
         self.label_semester_number_bottom_left.setText(semester_data.semester_number)
 
-        #Lade Courses Completed Daten in GUI
+        # Lade Courses Completed Daten in GUI
         self.label_courses_completet_number_bottom_mid.setText(str(len(course_data.get_courses_finished())))
 
-        #Lade Courses Open Daten in GUI
+        # Lade Courses Open Daten in GUI
         open_courses = (self.menu_data.load().get(course_of_study_data.name, {}).get("courses_amount", 0)
                         - len(course_data.get_courses_finished()))
         self.label_courses_open_number_bottom_right.setText(str(open_courses))
 
-        #Lade Passed Weeks und Remaining Weeks in GUI (Label Top Right)
+        # Lade Passed Weeks und Remaining Weeks in GUI (Label Top Right)
         self.label_semester_counter_number_right.setText(str(semester_data.get_passed_weeks()))
         self.label_semester_counter_number_left.setText(str(semester_data.get_remaining_weeks()))
+
+        # Lade Learning-Streak Daten in GUI
+        learning_tracker.calculating_streak(self.user_data)
+        current_streak = learning_tracker.current_streak(user_data=self.user_data)
+        best_streak = learning_tracker.best_streak(user_data=self.user_data)
+        self.label_current_streak_number.setText(str(current_streak))
+
+
+        # Speichere LearningStatus nach ButtonPush in userdata-File
+        self.pushButton_learned_today.clicked.connect(lambda: self.learning_tracker_button_push(status=True))
+        self.pushButton_not_learned_today.clicked.connect(lambda: self.learning_tracker_button_push(status=False))
+
+    # Überprüfung ob LearningStatus Buttons schon gedrückt wurden oder nicht
+    def learning_tracker_button_push(self, status):
+        loaded_user_data = user_data.load()
+        button_info = loaded_user_data.get("Learning Status Button", False)
+        learning_data_date = loaded_user_data.get("Learning Status Date", "")
+        if button_info == False:
+            user_data.update("Learning Status Button", True)
+            user_data.update("Learning Status Date", str(date.today()))
+            user_data.update("Learning Status", status)
+            learning_tracker.calculating_streak(user_data=self.user_data)
+        elif button_info == True:
+            message = "Achtung! Es wurden heute schon Learning-Daten gespeichert. Daten überschreiben?"
+            self.info_message(message, status)
+
+    def info_message(self, message, new_status):
+        dialog_box = QMessageBox(self)
+        dialog_box.setIcon(QMessageBox.Icon.Question)
+        dialog_box.setWindowTitle("Info")
+        dialog_box.setText(message)
+        dialog_box.setStandardButtons(
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
+        )
+        button = dialog_box.exec()
+
+        if button == QMessageBox.StandardButton.Yes:
+            print("Overwrite exising data")
+            user_data.update("Learning Status", new_status)
+            learning_tracker.calculating_streak(user_data=self.user_data)
+        else:
+            print("Keep exising data")
+
 
     # Einfügen der Pixmap Pfeile in GUI
     def setup_arrow_indicators(self):
