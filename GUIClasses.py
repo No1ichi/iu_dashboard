@@ -308,10 +308,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.label_semester_counter_number_left.setText(str(semester_data.get_remaining_weeks()))
 
         # Lade Learning-Streak Daten in GUI
-        learning_tracker.calculating_streak(self.user_data)
+        learning_tracker.load_data(self.user_data)
+
         current_streak = learning_tracker.current_streak(user_data=self.user_data)
         best_streak = learning_tracker.best_streak(user_data=self.user_data)
         self.label_current_streak_number.setText(str(current_streak))
+        self.label_best_streak.setText("Best: "+str(best_streak)+" Days")
 
 
         # Speichere LearningStatus nach ButtonPush in userdata-File
@@ -322,14 +324,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def learning_tracker_button_push(self, status):
         loaded_user_data = user_data.load()
         button_info = loaded_user_data.get("Learning Status Button", False)
-        learning_data_date = loaded_user_data.get("Learning Status Date", "")
         if button_info == False:
             user_data.update("Learning Status Button", True)
             user_data.update("Learning Status Date", str(date.today()))
             user_data.update("Learning Status", status)
-            learning_tracker.calculating_streak(user_data=self.user_data)
+            learning_tracker.calculating_streak(data=self.user_data)
         elif button_info == True:
-            message = "Achtung! Es wurden heute schon Learning-Daten gespeichert. Daten überschreiben?"
+            message = ("Achtung!\nEs wurden heute schon Learning-Daten gespeichert.\nResettet Counter oder erhöht Counter um 1\nDaten überschreiben? ")
             self.info_message(message, status)
 
     def info_message(self, message, new_status):
@@ -345,7 +346,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if button == QMessageBox.StandardButton.Yes:
             print("Overwrite exising data")
             user_data.update("Learning Status", new_status)
-            learning_tracker.calculating_streak(user_data=self.user_data)
+            learning_tracker.calculating_streak(data=self.user_data)
         else:
             print("Keep exising data")
 
@@ -504,6 +505,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         if user_dialog == True:
             updated_user_data = self.user_data.load()
+            loaded_menu_data = self.menu_data.load()
             # Update User Data Studenname, Studentnummer in GUI
             self.label_input_student_name.setText(updated_user_data.get("Student Name", ""))
             self.label_input_student_number.setText(updated_user_data.get("Student Number", ""))
@@ -513,6 +515,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.label_university_name.setText(university_data[0])
             self.label_university_street.setText(university_data[1])
             self.label_university_address.setText(university_data[2])
+
+            # Update Courses Open
+            course_of_study = updated_user_data.get("Course of Study", "")
+            open_courses = loaded_menu_data.get(course_of_study, {}).get("courses_amount", 0)
+            self.label_courses_open_number_bottom_right.setText(str(open_courses))
 
 
 

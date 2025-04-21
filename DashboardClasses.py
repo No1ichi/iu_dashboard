@@ -76,17 +76,19 @@ class LearningTracker:
     def __str__(self):
         return f"Calculated current streak: {self.current_streak}\nCalculated best streak: {self._best_streak}"
 
-    def calculating_streak(self, user_data):
+
+    def calculating_streak(self, data):
         """Berechnet die dauer des aktuellen Streaks und speichert die Daten.
-        Falls der Streak unterbrochen wird, wird der Counter wieder auf 0 gesetzt.
-        Ist der aktuelle Streak größer als der beste Streak, wird der beste Streak entsprechend aktualisiert"""
-        # Überprüfen, ob Button heute geklickt wurde. If True: Update Data, If False: Daten nicht updaten!
-        user_data = user_data.load()
-        button_info = user_data.get("Learning Status Button")
-        if button_info is True:
-            learning_status = user_data.get("Learning Status")
-            # Anpassen der Streak Counter
-            if learning_status:
+                    Falls der Streak unterbrochen wird, wird der Counter wieder auf 0 gesetzt.
+                    Ist der aktuelle Streak größer als der beste Streak, wird der beste Streak entsprechend aktualisiert"""
+        loaded_data = data.load()
+        button_info = loaded_data.get("Learning Status Button")
+        learning_date = loaded_data.get("Learning Status Date", "")
+
+        # Nur zählen, wenn wirklich heute gelernt wurde
+        if button_info is True and learning_date == str(date.today()):
+            learning_status = loaded_data.get("Learning Status")
+            if learning_status == True:
                 self._current_streak += 1
                 if self._current_streak > self._best_streak:
                     self._best_streak = self._current_streak
@@ -94,8 +96,9 @@ class LearningTracker:
                 user_data.update("Best Streak", self._best_streak)
                 print("Updated Current Streak and Best Streak in Data")
             else:
-                self._current_streak = 0
-        elif button_info is False:
+                user_data.update("Current Streak", 0)
+        else:
+            # Heute noch nicht gelernt → nichts tun
             pass
 
     def load_data(self, user_data):
@@ -186,7 +189,7 @@ class Semester:
 
     def get_remaining_weeks(self):
         """Gibt die verbleibenden Wochen des Semesters wieder"""
-        remaining_weeks = (self.end_date - date.today()).days // 7
+        remaining_weeks = round((self.end_date - date.today()).days / 7)
         if remaining_weeks > 0:
             return remaining_weeks
             print(remaining_weeks)
@@ -195,7 +198,7 @@ class Semester:
 
     def get_passed_weeks(self):
         """Gibt die vergangenen Wochen des Semesters wieder"""
-        passed_weeks = (date.today() - self.start_date).days // 7
+        passed_weeks = round((date.today() - self.start_date).days / 7)
         if passed_weeks < 26:
             return passed_weeks
             print(passed_weeks)
@@ -488,12 +491,9 @@ learning_tracker = LearningTracker()
 # muss erstmal schauen, ob ich das brauche und für was...(ich könnte auf jeden fall etwas via print-fnkt.
 # im terminal ausgeben
 
-# ExamPerformance und LearningTracker noch nicht bearbeitet.
+# ExamPerformance noch nicht bearbeitet.
 
-# Der Weeks Left Counter stimmt noch nicht, es gibt Einstellungen, bei denen wegen wahrscheinlich rundungsproblemen
-# nur insgesamt 25 Wochen anstatt 26 Wochen angezeigt werden
-
-# Ich muss noch eine möglichkeit einbinden, wie ich den LearningTracker über das GUI anspreche...
+# Ich muss noch einstellen, dass man keine leeren Kästchen im Dialog bestätigen kann, sondern eine Auswahl treffen muss
 
 # Inputvalidater muss noch eingebaut werden, wo sinnvoll. Auf jeden Fall bei Noten implementieren, dass man nur
 # Noten zwischen 1 - 6 eingeben kann.

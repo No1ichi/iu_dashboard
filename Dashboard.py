@@ -4,6 +4,8 @@ import json
 from datetime import date
 
 from PyQt6.QtWidgets import QApplication
+
+from DashboardClasses import learning_tracker
 from GUIClasses import MainWindow, AddUserDataDialog, AddSemesterDialog, AddCourseDialog, AddGradeDialog
 from DataManagingClasses import user_data, exam_data, study_data, menu_data
 
@@ -56,11 +58,13 @@ def initialize_defaults():
 # Resetten des LearningTracker Times
 learning_track_data = user_data.load()
 lt_date = learning_track_data.get("Learning Status Date")
-if lt_date != date.today():
+today = str(date.today())
+if lt_date != today:
     user_data.update("Learning Status", False)
     user_data.update("Learning Status Button", False)
+    learning_tracker.load_data(user_data)
 else:
-    pass
+    learning_tracker.load_data(user_data)
 
 
 initialize_defaults()
