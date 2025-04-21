@@ -89,8 +89,9 @@ class InputHandler:
 
 
 #JSON-Files zur Datenspeicherung
-user_data = JSONFile("userdata.json")
-study_data = JSONFile("studydata.json")
-exam_data = JSONFile("examdata.json")
-menu_data = JSONFile("menu_data.json")
+user_data = JSONFile("data/userdata.json")
+study_data = JSONFile("data/studydata.json")
+exam_data = JSONFile("data/examdata.json")
+menu_data = JSONFile("data/menu_data.json")
 
+input_handler = InputHandler()

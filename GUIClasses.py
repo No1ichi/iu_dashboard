@@ -2,8 +2,9 @@ import json
 from json import JSONDecodeError
 
 from PyQt6 import QtWidgets, QtCore
-from PyQt6.QtWidgets import QMainWindow, QDialog, QMessageBox
-from PyQt6.QtCore import QDate
+from PyQt6.QtWidgets import QMainWindow, QDialog, QMessageBox, QGraphicsOpacityEffect
+from PyQt6.QtGui import QPixmap
+from PyQt6.QtCore import QDate, Qt
 from matplotlib.figure import Figure
 
 from MainWindow import Ui_MainWindow
@@ -12,14 +13,15 @@ from ui_widget_addgrade import Ui_AddGrade
 from ui_widget_addsemester import Ui_AddSemester
 from ui_widget_adduserdata import Ui_NewUserData
 from DashboardClasses import charts, uni_data, student_data, semester_data, course_of_study_data, course_data
-from DataManagingClasses import menu_data, exam_data, study_data, user_data
+from DataManagingClasses import menu_data, exam_data, study_data, user_data, input_handler
 from datetime import date
 
 # Course Status Pie-Chart
 course_data.update_data(study_data, exam_data, user_data)
 amt_courses_done = len(course_data.get_courses_finished())
 amt_courses_open = len(course_data.get_courses_in_progress())
-amt_all_courses = len(course_data.get_all_courses(course_of_study_data.name)) - (amt_courses_open + amt_courses_done)
+amt_all_courses = (menu_data.load().get(course_of_study_data.name, {}).get("courses_amount", 34)
+                   - (amt_courses_open + amt_courses_done))
 
 pie_chart_course_status = charts("pie", pie_chart_values=[
     amt_courses_done,amt_courses_open,amt_all_courses])
@@ -103,8 +105,9 @@ class AddCourseDialog(QDialog, Ui_AddCourse):
 
     def load_data(self):
         course_data.update_data(study_data, exam_data, user_data)
+        course_of_study_data.update_data((user_data))
         # Alle Kurse des Studiengangs auslesen
-        all_courses = course_data.get_all_courses(course_of_study_data.name)
+        all_courses = (course_data.get_all_courses(course_of_study_data.name))
         # Kurse aus Kurs-Liste herausfiltern, die abgeschlossen oder in bearbeitung sind
         filtered_courses = [
             course for course in all_courses
@@ -176,7 +179,13 @@ class AddUserDataDialog(QDialog, Ui_NewUserData):
         self.user_data.update("Student Name", self.lineEdit_StudentName.text()),
         self.user_data.update("Student Number", self.lineEdit_StudentNumber.text()),
         self.user_data.update("Course of Study", self.comboBox_CourseOfStudy.currentText())
-        self.accept()
+
+        user_name = input_handler.validate_text(self.lineEdit_StudentName.text())
+        user_student_number = input_handler.validate_text(self.lineEdit_StudentNumber.text())
+        if user_name == True and user_student_number == True:
+            self.accept()
+        else:
+            print("Please enter a valid Student Name and Student Number.")
 
 
     def load_data(self):
@@ -185,7 +194,7 @@ class AddUserDataDialog(QDialog, Ui_NewUserData):
         universities = main_data.get("universities", [])
         university_names = [uni[0] for uni in universities]
         # Angebotene Kurse extrahieren
-        all_courses = course_data.get_all_courses(course_of_study_data.name)
+        all_courses = main_data.get("course_of_studies", [])
 
         self.comboBox_University.addItems(university_names)
         self.comboBox_CourseOfStudy.addItems(all_courses)
@@ -208,6 +217,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self, user_data, study_data, exam_data, menu_data, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.setupUi(self)
+        self.setup_arrow_indicators()
         self.user_data = user_data
         self.study_data = study_data
         self.exam_data = exam_data
@@ -265,6 +275,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.label_grade_move_pos.setText(str(course_of_study_data.get_grade_difference()))
         self.label_grade_move_neg.setText(str(course_of_study_data.get_grade_difference()))
 
+        grade_diff = course_of_study_data.get_grade_difference()
+        if grade_diff < 0:
+            self.set_arrow_visibility("down")
+        elif grade_diff > 0:
+            self.set_arrow_visibility("up")
+        else:
+            self.set_arrow_visibility("none")
+
         #Lade User Data Studenname, Studentnummer in GUI
         self.label_input_student_name.setText(student_data.name)
         self.label_input_student_number.setText(student_data.student_number)
@@ -281,7 +299,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.label_courses_completet_number_bottom_mid.setText(str(len(course_data.get_courses_finished())))
 
         #Lade Courses Open Daten in GUI
-        open_courses = (self.menu_data.load().get(course_of_study_data.name, 99).get("courses_amount")
+        open_courses = (self.menu_data.load().get(course_of_study_data.name, {}).get("courses_amount", 0)
                         - len(course_data.get_courses_finished()))
         self.label_courses_open_number_bottom_right.setText(str(open_courses))
 
@@ -289,12 +307,53 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.label_semester_counter_number_right.setText(str(semester_data.get_passed_weeks()))
         self.label_semester_counter_number_left.setText(str(semester_data.get_remaining_weeks()))
 
-    #Resizing Methode für Overlay-Widget AVG-Grade links oben
+    # Einfügen der Pixmap Pfeile in GUI
+    def setup_arrow_indicators(self):
+        """Initialisiert die Pfeilbilder und ihre Sichtbarkeit"""
+        # Pfeile laden
+        arrow_size = 75
+        pixmap_arrow_up = QPixmap("icons/green_arrow.png").scaled(
+            arrow_size, arrow_size,
+            QtCore.Qt.AspectRatioMode.KeepAspectRatio,
+            QtCore.Qt.TransformationMode.SmoothTransformation
+        )
+        pixmap_arrow_down = QPixmap("icons/red_arrow.png").scaled(
+            arrow_size, arrow_size,
+            QtCore.Qt.AspectRatioMode.KeepAspectRatio,
+            QtCore.Qt.TransformationMode.SmoothTransformation
+        )
+
+        self.label_arrow_up.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.label_arrow_down.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        # In QLabel setzen
+        self.label_arrow_up.setPixmap(pixmap_arrow_up)
+        self.label_arrow_down.setPixmap(pixmap_arrow_down)
+
+        # Opacity hinzufügen
+        self.opacity_up = QGraphicsOpacityEffect()
+        self.opacity_down = QGraphicsOpacityEffect()
+        self.label_arrow_up.setGraphicsEffect(self.opacity_up)
+        self.label_arrow_down.setGraphicsEffect(self.opacity_down)
+
+    def set_arrow_visibility(self, direction: str):
+        """Steuert Sichtbarkeit der Pfeile: 'up', 'down', 'none'"""
+        if direction == 'up':
+            self.opacity_up.setOpacity(1.0)
+            self.opacity_down.setOpacity(0.2)
+        elif direction == 'down':
+            self.opacity_up.setOpacity(0.2)
+            self.opacity_down.setOpacity(1.0)
+        else:
+            self.opacity_up.setOpacity(1.0)
+            self.opacity_down.setOpacity(1.0)
+
+    # Resizing Methode für Overlay-Widget AVG-Grade links oben
     def update_overlay_size(self, event):
         self.overlay_label.setGeometry(self.frame_avg_grades_chart_small.rect())
         event.accept()
 
-    #Funktionen zum öffnen und arbeiten mit den Dialogs
+    # Funktionen zum öffnen und arbeiten mit den Dialogs
     def open_add_grade_dialog(self):
         dialog = AddGradeDialog(self.study_data, self.exam_data)
         result = dialog.exec()
@@ -319,12 +378,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def refresh_ui(self, grade_dialog=False, course_dialog=False, semester_dialog=False, user_dialog=False):
 
         if grade_dialog == True:
-            #Update Courses Completed
+            # Update Courses Completed
             course_data.update_data(study_data, exam_data, user_data)
             self.label_courses_completet_number_bottom_mid.setText(str(len(course_data.get_courses_finished())))
 
-            #Update Courses Open
-            new_open_courses = (self.menu_data.load().get(course_of_study_data.name, 99).get("courses_amount")
+            # Update Courses Open
+            new_open_courses = (self.menu_data.load().get(course_of_study_data.name, {}).get("courses_amount", 0)
                             - len(course_data.get_courses_finished()))
             self.label_courses_open_number_bottom_right.setText(str(new_open_courses))
 
@@ -334,26 +393,54 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.label_grade_move_pos.setText(str(course_of_study_data.get_grade_difference()))
             self.label_grade_move_neg.setText(str(course_of_study_data.get_grade_difference()))
 
-            #Update AVG-Grade Charts
-            #Großer AVG-Grade Line-Chart
+            grade_diff = course_of_study_data.get_grade_difference()
+            if grade_diff < 0:
+                self.set_arrow_visibility("down")
+            elif grade_diff > 0:
+                self.set_arrow_visibility("up")
+            else:
+                self.set_arrow_visibility("none")
+
+            # Update AVG-Grade Charts
+            # Großer AVG-Grade Line-Chart
             line_chart_avg_grade_big.update_charts(
                 y_values=course_of_study_data.all_grades,
                 average_grade=course_of_study_data.get_average_grade(exam_data),
                 avg_grade_line=True
             )
 
-            #Kleiner AVG-Grade Line-Chart
+            # Kleiner AVG-Grade Line-Chart
             line_chart_avg_grade_small.update_charts(y_values=course_of_study_data.all_grades)
 
-            #Update AVG-Grade Anzeige links oben
+            # Update AVG-Grade Anzeige links oben
             self.overlay_label.setText(str(course_of_study_data.get_average_grade(exam_data)))
 
-        if course_dialog == True:
-            #Update Pie-Chart Course Status
-            (course_data.update_data(study_data, exam_data, user_data))
+            # Update Pie-Chart Course Status
+            course_data.update_data(study_data, exam_data, user_data)
             new_amt_courses_done = len(course_data.get_courses_finished())
             new_amt_courses_open = len(course_data.get_courses_in_progress())
-            new_amt_all_courses = len(course_data.get_all_courses(course_of_study_data.name)) - (amt_courses_open + amt_courses_done)
+            new_amt_all_courses = (self.menu_data.load().get(course_of_study_data.name, {}).get("courses_amount", 0)
+                                   - (new_amt_courses_open + new_amt_courses_done))
+            print("n-courses done", new_amt_courses_done,
+                  "\n""n-courses in progress", new_amt_courses_open,
+                  "\n""n-all courses", new_amt_all_courses)
+
+            pie_chart_course_status.update_charts(pie_chart_values=[
+                new_amt_courses_done,
+                new_amt_courses_open,
+                new_amt_all_courses
+            ])
+
+        if course_dialog == True:
+            # Update Pie-Chart Course Status
+            course_data.update_data(study_data, exam_data, user_data)
+            new_amt_courses_done = len(course_data.get_courses_finished())
+            new_amt_courses_open = len(course_data.get_courses_in_progress())
+            new_amt_all_courses = (self.menu_data.load().get(course_of_study_data.name, 99).get("courses_amount")
+                                   - (new_amt_courses_open + new_amt_courses_done))
+            print("n-courses done", new_amt_courses_done,
+                  "\n""n-courses in progress", new_amt_courses_open,
+                  "\n""n-all courses", new_amt_all_courses)
 
             pie_chart_course_status.update_charts(pie_chart_values=[
                 new_amt_courses_done,
@@ -374,15 +461,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         if user_dialog == True:
             updated_user_data = self.user_data.load()
-            #Update User Data Studenname, Studentnummer in GUI
+            # Update User Data Studenname, Studentnummer in GUI
             self.label_input_student_name.setText(updated_user_data.get("Student Name", ""))
             self.label_input_student_number.setText(updated_user_data.get("Student Number", ""))
 
-            #Update User Data Universtitätsadresse in GUI
+            # Update User Data Universtitätsadresse in GUI
             university_data = updated_user_data.get("University", ["name", "street", "town"])
             self.label_university_name.setText(university_data[0])
             self.label_university_street.setText(university_data[1])
             self.label_university_address.setText(university_data[2])
+
 
 
 

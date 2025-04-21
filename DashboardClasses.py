@@ -144,6 +144,19 @@ class CourseOfStudy:
         else:
             print("Student ist schon in einem anderen Studiengang eingeschrieben")
 
+    def update_data(self, user_data):
+        loaded_user_data = user_data.load()
+        loaded_menu_data = menu_data.load()
+        self.name = loaded_user_data.get("Course of Study", "")
+        if self.name == "" or self.name not in loaded_menu_data:
+            print("Studiengang nicht gefunden, lade default Werte")
+            self.num_semesters = 0
+            self.ects_points = 0
+            return
+
+        self.num_semesters = loaded_menu_data[self.name].get("semester", 0)
+        self.ects_points = loaded_menu_data[self.name].get("ects_points", 0)
+
 
 class Semester:
     def __init__(self, semester_number, start_date_string):
@@ -201,7 +214,7 @@ class Course:
 
     def get_all_courses(self, course_of_study):
         main_data = self.menu_data.load()
-        all_available_courses = main_data.get(course_of_study).get("courses")
+        all_available_courses = main_data.get(course_of_study, {}).get("courses", [])
         self.all_courses = all_available_courses
         return self.all_courses
 
@@ -210,6 +223,7 @@ class Course:
         load_study_data = self.study_data.load()
         open_course_data = load_study_data.get("Courses", [])
         passed_courses = [key for key, value in load_exam_data.items() if value[0] == "Passed"]
+        self.courses_in_progress = []
         for course in open_course_data:
             if course not in passed_courses:
                 self.courses_in_progress.append(course)
@@ -226,11 +240,15 @@ class Course:
         self.user_data = new_user_data
 
     def get_exam_types(self):
-        data = self.user_data.load()
-        course_of_study_name = data.get("Course of Study")
-        cos_data = menu_data.load().get(course_of_study_name)
-        exam_type_list = cos_data.get("exam_type")
-        return exam_type_list
+        if not self.user_data:
+            return []
+        user_info = self.user_data.load()
+        course_name = user_info.get("Course of Study", "").strip()
+        cos_data = self.menu_data.load().get(course_name)
+        if cos_data is None:
+            return []
+        return cos_data.get("exam_type", [])
+
 
 @dataclass
 class ExamPerformance:
@@ -430,27 +448,37 @@ else:
     semester_data = Semester("N/A", "2024-01-01")
 
 # Erstellen der CourseOfStudy-Instanz aus vorhandenen Daten oder Standard-Daten falls keine Daten vorhanden sind
-if loaded_user_data != {}:
-    loaded_CoS_name = loaded_user_data.get("Course of Study", "N/A")
-    if loaded_CoS_name not in loaded_menu_data:
-        print("Dieser Studiengang ist nicht in den Stammdaten enthalten!")
-    else:
-        loaded_num_semesters = loaded_menu_data.get(loaded_CoS_name).get("semester")
-        loaded_ects_points = loaded_menu_data.get(loaded_CoS_name).get("ects_points")
+loaded_CoS_name = loaded_user_data.get("Course of Study")
+
+if loaded_CoS_name and loaded_CoS_name in loaded_menu_data:
+    loaded_num_semesters = loaded_menu_data[loaded_CoS_name].get("semester", 0)
+    loaded_ects_points = loaded_menu_data[loaded_CoS_name].get("ects_points", 0)
     course_of_study_data = CourseOfStudy(loaded_CoS_name, loaded_num_semesters, loaded_ects_points)
-else: course_of_study_data = CourseOfStudy("N/A", 0, 0)
+else:
+    print("Keine gültigen Studiengangdaten gefunden – Default-Werte werden verwendet.")
+    course_of_study_data = CourseOfStudy("N/A", 0, 0)
 
 # Erstellen der Course-Instanz aus vorhandenen Daten oder Standard-Daten falls keine Daten vorhanden sind
 course_data = Course(menu_data)
 
-# Erstmal nach und nach alle vorhandenen Klassen erstellen und schon soweit einbauen wie möglich.
-#Danach muss ich die Klassen entsprechend anpassen, um Code von GUIClasses in die Klassen auszulagern als Methoden,
-# die ich dann wieder in GUIClasses implementiere.
-#Ich habe als letztes die CourseOfStudy Klasse instanziiert. Bis jetzt habe ich die ganzen Listen und verbindungen
+# Bis jetzt habe ich die ganzen Listen und verbindungen wie
 # Aggregation und soweiter noch nicht beachtet. Also zum Beispiel add_student oder add_semester bei CourseOfStudy
-#muss erstmal schauen, ob ich das brauche und für was...
+# muss erstmal schauen, ob ich das brauche und für was...(ich könnte auf jeden fall etwas via print-fnkt.
+# im terminal ausgeben
 
-# ExamPerformance noch nicht bearbeitet. Sonst soweit alles implementiert. Die Verbindungen untereinander wie
-# schon oben beschrieben noch nicht bearbeitet.
+# ExamPerformance und LearningTracker noch nicht bearbeitet.
 
+# Der Weeks Left Counter stimmt noch nicht, es gibt Einstellungen, bei denen wegen wahrscheinlich rundungsproblemen
+# nur insgesamt 25 Wochen anstatt 26 Wochen angezeigt werden
+
+# Ich muss noch eine möglichkeit einbinden, wie ich den LearningTracker über das GUI anspreche...
+
+# Widgets/Dialogboxen müssen noch die Auswahlfelder angepasst werden mit Größe, (Schrift-)farbe und Ausrichtung
+# an gleichen linien
+
+# Inputvalidater muss noch eingebaut werden, wo sinnvoll. Auf jeden Fall bei Noten implementieren, dass man nur
+# Noten zwischen 1 - 6 eingeben kann.
+
+# Wenn ein Course failed ist, sollte ein counter zählen bis maximal drei, dann meldung geben (wenn ich das überhaupt
+# noch einbauen will
 

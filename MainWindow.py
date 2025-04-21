@@ -8,6 +8,9 @@
 
 from PyQt6 import QtCore, QtGui, QtWidgets
 
+# Änderungen in dem File:
+
+
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
