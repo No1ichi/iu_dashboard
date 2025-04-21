@@ -493,11 +493,23 @@ learning_tracker = LearningTracker()
 
 # ExamPerformance noch nicht bearbeitet.
 
-# Ich muss noch einstellen, dass man keine leeren Kästchen im Dialog bestätigen kann, sondern eine Auswahl treffen muss
-
-# Inputvalidater muss noch eingebaut werden, wo sinnvoll. Auf jeden Fall bei Noten implementieren, dass man nur
-# Noten zwischen 1 - 6 eingeben kann.
-
 # Wenn ein Course failed ist, sollte ein counter zählen bis maximal drei, dann meldung geben (wenn ich das überhaupt
 # noch einbauen will
+
+#ALS NÄCHSTES
+#1) Ich muss noch einstellen, dass man keine leeren Kästchen im Dialog bestätigen kann, sondern eine Auswahl treffen muss
+
+#2) Inputvalidater muss noch eingebaut werden, wo sinnvoll. Auf jeden Fall bei Noten implementieren, dass man nur
+# Noten zwischen 1 - 6 eingeben kann.
+
+#3) ExamPerformance einbauen
+
+#4) Gedanken machen, wie ich die Aggregationen usw. einbauen will. Nur einbauen, weil ichs etabliert habe.
+# Keine direkte Verwendung im GUI
+
+# Fehlerüberprüfung / Debugging
+
+# exe-Datei erstellen (PyQT6 Buch eintrag nachlesen)
+
+# Readme-Datei erstellen "Anleitung"
 
