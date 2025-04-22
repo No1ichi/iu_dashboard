@@ -1,10 +1,50 @@
 {
     "": [
-        "Status",
-        0
+        "Passed",
+        "7"
     ],
     "Artificial Intelligence": [
         "Passed",
         "1"
+    ],
+    "Einf\u00fchrung in das wissenschaftliche Arbeiten f\u00fcr IT und Technik": [
+        "Passed",
+        "1"
+    ],
+    "Einf\u00fchrung in die Programmierung mit Python": [
+        "Passed",
+        "1"
+    ],
+    "Mathematik: Analysis": [
+        "Passed",
+        "1"
+    ],
+    "Kollaboratives Arbeiten": [
+        "Passed",
+        "1"
+    ],
+    "Statistik - Wahrscheinlichkeit und deskriptive Statistik": [
+        "Passed",
+        "10"
+    ],
+    "Projekt: Objektorientierte und funktionale Programmierung mit Python": [
+        "Passed",
+        "1"
+    ],
+    "Mathematik: Lineare Algebra": [
+        "Passed",
+        "0.9"
+    ],
+    "Interkulturelle und ethische Handlungskompetenzen": [
+        "Passed",
+        "9"
+    ],
+    "Statistik - Schlie\u00dfende Statistik": [
+        "Passed",
+        "9"
+    ],
+    "Cloud Computing": [
+        "Passed",
+        "6.0"
     ]
 }

@@ -41,6 +41,11 @@ class University:
         """Entfernt einen Studenten aus der Liste der Studierenden"""
         self.students.remove(student)
 
+    def __str__(self):
+        return self.name
+    def __repr__(self):
+        return self.name
+
 
 @dataclass
 class Student:
@@ -67,14 +72,27 @@ class Student:
             return f"{self.name} ist in keinem Studiengang eingeschrieben"
         return self.course_of_study
 
+    def __repr__(self):
+        return f"Name: {self.name}\nStudent Number: {self.student_number}"
+    def __str__(self):
+        return (f"Name: {self.name}\n"
+                f"Student Number: {self.student_number}\n"
+                f"University: {self.university}\n"
+                f"Course of Study: {self.course_of_study}\n"
+                f"Learning Streak: {self.learning_streaks}")
+
+
 class LearningTracker:
     def __init__(self):
         self._current_streak = 0
         self._best_streak = 0
-        #student_name.learning_streaks = self
+        self.student_name = None
 
     def __str__(self):
-        return f"Calculated current streak: {self.current_streak}\nCalculated best streak: {self._best_streak}"
+        return f"Calculated current streak: {self._current_streak}\nCalculated best streak: {self._best_streak}"
+
+    def __repr__(self):
+        return f"Calculated current streak: {self._current_streak}\nCalculated best streak: {self._best_streak}"
 
 
     def calculating_streak(self, data):
@@ -162,7 +180,7 @@ class CourseOfStudy:
         """Fügt einen Studenten zur Liste dieses Studiengangs hinzu und fügt diesen Studiengang zum Studenten hinzu"""
         if new_student.course_of_study is None:
             self.students.append(new_student)
-            new_student.course_of_study = self
+            new_student.course_of_study = self.name
         else:
             print("Student ist schon in einem anderen Studiengang eingeschrieben")
 
@@ -178,6 +196,11 @@ class CourseOfStudy:
 
         self.num_semesters = loaded_menu_data[self.name].get("semester", 0)
         self.ects_points = loaded_menu_data[self.name].get("ects_points", 0)
+
+    def __repr__(self):
+        return f"Course of Study Name: {self.name}"
+    def __str__(self):
+        return f"Course of Study Name: {self.name}\nSemesters: {self.num_semesters}\nECTS-Points: {self.ects_points}"
 
 
 class Semester:
@@ -219,9 +242,9 @@ class Semester:
 
 
     def __repr__(self):
-        return f"Semester Number {self.semester_number}, Start date {self.start_date}, End date {self.end_date}, Modules {self.courses}"
+        return f"Semester Number: {self.semester_number}\nStart date: {self.start_date}\nEnd date: {self.end_date}\nModules: {self.courses}"
     def __str__(self):
-        return f"Semester Number {self.semester_number}, Start date {self.start_date}, End date {self.end_date}, Modules {self.courses}"
+        return f"Semester Number: {self.semester_number}\nStart date: {self.start_date}\nEnd date: {self.end_date}\nModules: {self.courses}"
 
 class Course:
     def __init__(self, menu_data):
@@ -274,8 +297,8 @@ class Course:
 
 @dataclass
 class ExamPerformance:
-    modul: object
-    passed: bool
+    modul: str
+    passed: str
     grade: float
 
     def check_status(self):
@@ -486,26 +509,36 @@ course_data = Course(menu_data)
 # Erstellen der Learning-Tracker instanz
 learning_tracker = LearningTracker()
 
+# Erstelle ExamPerformance Instanzen
+all_exam_data = exam_data.load()
+exam_instances = {}
+for key, value in all_exam_data.items():
+    class_name = key.replace(" ", "_")
+    exam_instances[class_name] = ExamPerformance(class_name, value[0], value[1])
+
+
+course_of_study_data.add_student(student_data)
+learning_tracker.student_name = student_data.name
+uni_data.add_student(student_data)
+uni_data.add_course_of_study(course_of_study_data)
+student_data.course = course_of_study_data
+student_data.learning_streaks = learning_tracker
+
+print(uni_data)
+print(course_of_study_data)
+print(student_data)
+
+
 # Bis jetzt habe ich die ganzen Listen und verbindungen wie
 # Aggregation und soweiter noch nicht beachtet. Also zum Beispiel add_student oder add_semester bei CourseOfStudy
 # muss erstmal schauen, ob ich das brauche und für was...(ich könnte auf jeden fall etwas via print-fnkt.
 # im terminal ausgeben
 
-# ExamPerformance noch nicht bearbeitet.
 
 # Wenn ein Course failed ist, sollte ein counter zählen bis maximal drei, dann meldung geben (wenn ich das überhaupt
 # noch einbauen will
 
 #ALS NÄCHSTES
-#1) Ich muss noch einstellen, dass man keine leeren Kästchen im Dialog bestätigen kann, sondern eine Auswahl treffen muss
-
-#2) Inputvalidater muss noch eingebaut werden, wo sinnvoll. Auf jeden Fall bei Noten implementieren, dass man nur
-# Noten zwischen 1 - 6 eingeben kann.
-
-#3) ExamPerformance einbauen
-
-#4) Gedanken machen, wie ich die Aggregationen usw. einbauen will. Nur einbauen, weil ichs etabliert habe.
-# Keine direkte Verwendung im GUI
 
 # Fehlerüberprüfung / Debugging
 

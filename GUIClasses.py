@@ -2,7 +2,7 @@ import json
 from json import JSONDecodeError
 
 from PyQt6 import QtWidgets, QtCore
-from PyQt6.QtWidgets import QMainWindow, QDialog, QMessageBox, QGraphicsOpacityEffect
+from PyQt6.QtWidgets import QMainWindow, QDialog, QMessageBox, QGraphicsOpacityEffect, QDialogButtonBox
 from PyQt6.QtGui import QPixmap
 from PyQt6.QtCore import QDate, Qt
 from matplotlib.figure import Figure
@@ -60,12 +60,18 @@ class AddGradeDialog(QDialog, Ui_AddGrade):
         self.buttonBox.accepted.connect(self.save_data)
         self.buttonBox.rejected.connect(self.reject)
 
+        if not self.lineEdit_Grade.text():
+            self.buttonBox.button(QDialogButtonBox.StandardButton.Ok).setEnabled(False)
+        self.lineEdit_Grade.textChanged.connect(self.check_button_status)
+
+        self.lineEdit_Grade.textChanged.connect(self.check_input)
+
     def save_data(self):
-        self.exam_data.update(
-            self.comboBox_Modul.currentText(),
-            [self.comboBox_Passed.currentText(),self.lineEdit_Grade.text()]
-        )
-        self.accept()
+            self.exam_data.update(
+                self.comboBox_Modul.currentText(),
+                [self.comboBox_Passed.currentText(),self.lineEdit_Grade.text()]
+            )
+            self.accept()
 
     def load_data(self):
         # Verfügbare eingeschriebene Kurse extrahieren (Die zuvor per Add Course hinzugefügt wurden)
@@ -75,6 +81,21 @@ class AddGradeDialog(QDialog, Ui_AddGrade):
         available_courses = [course for course in assigned_courses if course not in passed_courses]
 
         self.comboBox_Modul.addItems(available_courses)
+
+    def check_button_status(self):
+        if self.lineEdit_Grade.text():
+            self.buttonBox.button(QDialogButtonBox.StandardButton.Ok).setEnabled(True)
+        if not self.lineEdit_Grade.text():
+            self.buttonBox.button(QDialogButtonBox.StandardButton.Ok).setEnabled(False)
+
+    def check_input(self):
+        grade = self.lineEdit_Grade.text()
+        if input_handler.validate_grade(grade):
+            self.buttonBox.button(QDialogButtonBox.StandardButton.Ok).setEnabled(True)
+            print("True")
+        if not input_handler.validate_grade(grade):
+            self.buttonBox.button(QDialogButtonBox.StandardButton.Ok).setEnabled(False)
+            print("False")
 
 
 # Dialogklasse Add Course
@@ -87,6 +108,17 @@ class AddCourseDialog(QDialog, Ui_AddCourse):
 
         self.buttonBox.accepted.connect(self.save_data)
         self.buttonBox.rejected.connect(self.reject)
+
+        self.lineEdit_ECTSPoints.textChanged.connect(self.check_input)
+
+    def check_input(self):
+        text = self.lineEdit_ECTSPoints.text()
+        if input_handler.validate_number(text):
+            self.buttonBox.button(QDialogButtonBox.StandardButton.Ok).setEnabled(True)
+            print("True")
+        if not input_handler.validate_number(text):
+            self.buttonBox.button(QDialogButtonBox.StandardButton.Ok).setEnabled(False)
+            print("False")
 
     def save_data(self):
         course_list = study_data.load().get("Courses", [])
@@ -465,9 +497,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             new_amt_courses_open = len(course_data.get_courses_in_progress())
             new_amt_all_courses = (self.menu_data.load().get(course_of_study_data.name, {}).get("courses_amount", 0)
                                    - (new_amt_courses_open + new_amt_courses_done))
-            print("n-courses done", new_amt_courses_done,
-                  "\n""n-courses in progress", new_amt_courses_open,
-                  "\n""n-all courses", new_amt_all_courses)
 
             pie_chart_course_status.update_charts(pie_chart_values=[
                 new_amt_courses_done,
@@ -482,9 +511,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             new_amt_courses_open = len(course_data.get_courses_in_progress())
             new_amt_all_courses = (self.menu_data.load().get(course_of_study_data.name, 99).get("courses_amount")
                                    - (new_amt_courses_open + new_amt_courses_done))
-            print("n-courses done", new_amt_courses_done,
-                  "\n""n-courses in progress", new_amt_courses_open,
-                  "\n""n-all courses", new_amt_all_courses)
 
             pie_chart_course_status.update_charts(pie_chart_values=[
                 new_amt_courses_done,

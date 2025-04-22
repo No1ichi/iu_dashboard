@@ -72,8 +72,17 @@ class InputHandler:
     def validate_number(value):
         """Überprüft, ob die Eingabe eine gültige Zahl ist."""
         try:
-            float(value)  # Falls `value` keine Zahl ist, wird eine Exception geworfen
+            float(value)
             return True
+        except ValueError:
+            return False
+
+    @staticmethod
+    def validate_grade(value):
+        """Überprüft, ob die Eingabe eine gültige Note ist in Range 1 - 6"""
+        try:
+            grade = float(value)
+            return 1.0 <= grade <= 6.0
         except ValueError:
             return False
 
@@ -82,7 +91,7 @@ class InputHandler:
         """Überprüft, ob die Eingabe ein gültiges Datum im Format DD-MM-YYYY ist."""
         from datetime import datetime
         try:
-            datetime.strptime(date_text, "%d-%m-%Y")
+            datetime.strptime(date_text, "%Y-%m-%d")
             return True
         except ValueError:
             return False
