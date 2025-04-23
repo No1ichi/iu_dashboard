@@ -1,6 +1,5 @@
 import sys
 import os
-import json
 from datetime import date
 
 from PyQt6.QtWidgets import QApplication
@@ -9,8 +8,8 @@ from DashboardClasses import learning_tracker
 from GUIClasses import MainWindow, AddUserDataDialog, AddSemesterDialog, AddCourseDialog, AddGradeDialog
 from DataManagingClasses import user_data, exam_data, study_data, menu_data
 
-#Öffne JSON-File study_data und legt leere Kurs-Liste an, falls sie noch nicht vorhanden ist.
-#Kurs-Liste speichert hinzugefügte Kurse mit ECTS-Punkten und Exam-Typ ab
+# Öffne JSON-File study_data und legt leere Kurs-Liste an, falls sie noch nicht vorhanden ist.
+# Kurs-Liste speichert hinzugefügte Kurse mit ECTS-Punkten und Exam-Typ ab
 def initialize_defaults():
     # Initialisiere Default-Werte für studydata JSON-File
     if os.path.exists("data/studydata.json"):

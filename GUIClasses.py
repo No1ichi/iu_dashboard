@@ -1,11 +1,8 @@
-import json
-from json import JSONDecodeError
-
 from PyQt6 import QtWidgets, QtCore
 from PyQt6.QtWidgets import QMainWindow, QDialog, QMessageBox, QGraphicsOpacityEffect, QDialogButtonBox
 from PyQt6.QtGui import QPixmap
-from PyQt6.QtCore import QDate, Qt
-from matplotlib.figure import Figure
+from PyQt6.QtCore import Qt
+
 
 from MainWindow import Ui_MainWindow
 from ui_widget_addcourse import Ui_AddCourse
@@ -28,19 +25,19 @@ pie_chart_course_status = charts("pie", pie_chart_values=[
 pie_chart_course_status.fig.subplots_adjust(left=0.01, right=0.99, top=0.95, bottom=0.01)
 
 # Großer AVG-Grade Line-Chart
+course_of_study_data.get_all_grades(exam_data)
 line_chart_avg_grade_big = charts(
     "line",
-    course_of_study_data.all_grades,
+    y_values=course_of_study_data.all_grades,
     average_grade=course_of_study_data.get_average_grade(exam_data),
     avg_grade_line=True
 )
 line_chart_avg_grade_big.fig.subplots_adjust(left=0.06, right=0.99, top=0.95, bottom=0.05)
 
-
 # Kleiner AVG-Grade Line-Chart
 line_chart_avg_grade_small = charts("line", course_of_study_data.all_grades)
-line_chart_avg_grade_small.set_opacity(0.3)
-line_chart_avg_grade_small.fig.subplots_adjust(left=0.2, right=0.8, top=0.8, bottom=0.2)
+line_chart_avg_grade_small.set_opacity(0.5)
+line_chart_avg_grade_small.fig.subplots_adjust(left=0.15, right=0.85, top=0.85, bottom=0.15)
 
 #Remaining Weeks Pie Chart
 remaining_weeks_pie_chart = charts("pie70", remaining_weeks_semester=semester_data.get_remaining_weeks())
@@ -255,17 +252,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.exam_data = exam_data
         self.menu_data = menu_data
 
-        # Layout für MPL-Insert AVG-Grades Line Chart Big
-        layout = QtWidgets.QVBoxLayout(self.frame_avg_grades_chart_big)
-        self.frame_avg_grades_chart_big.setLayout(layout)
-        # Einbetten von MPL-Widget in frame_avg_grades_chart_big
-        layout.addWidget(line_chart_avg_grade_big)
-
-        # Layout für MPL-Insert Course Status Pie Chart
-        layout = QtWidgets.QVBoxLayout(self.frame_pie_chart)
-        self.frame_pie_chart.setLayout(layout)
-        # Einbetten von MPL-Widget in frame_pie_chart
-        layout.addWidget(pie_chart_course_status)
+        # Layout für Matplotlib-Insert AVG-Grades Line Chart Small
+        layout = QtWidgets.QVBoxLayout(self.frame_avg_grades_chart_small)
+        self.frame_avg_grades_chart_small.setLayout(layout)
+        # Einbetten von MPL-Widget in frame_3
+        layout.addWidget(line_chart_avg_grade_small)
 
         # Layout für MPL-Insert Weeks Left Pie-Chart
         layout = QtWidgets.QVBoxLayout(self.frame_3)
@@ -273,14 +264,20 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # Einbetten von MPL-Widget in frame_3
         layout.addWidget(remaining_weeks_pie_chart)
 
-        # Layout für MPL-Insert AVG-Grades Line Chart Small
-        layout = QtWidgets.QVBoxLayout(self.frame_avg_grades_chart_small)
-        self.frame_avg_grades_chart_small.setLayout(layout)
-        # Einbetten von MPL-Widget in frame_3
-        layout.addWidget(line_chart_avg_grade_small)
+        # Layout für MPL-Insert Course Status Pie Chart
+        layout = QtWidgets.QVBoxLayout(self.frame_pie_chart)
+        self.frame_pie_chart.setLayout(layout)
+        # Einbetten von MPL-Widget in frame_pie_chart
+        layout.addWidget(pie_chart_course_status)
+
+        # Layout für Matplotlib-Insert AVG-Grades Line Chart Big
+        layout = QtWidgets.QVBoxLayout(self.frame_avg_grades_chart_big)
+        self.frame_avg_grades_chart_big.setLayout(layout)
+        # Einbetten von MPL-Widget in frame_avg_grades_chart_big
+        layout.addWidget(line_chart_avg_grade_big)
 
         # Überlagerndes QLabel für Durchschnittsnote über AVG Grade Chart Small
-        # Lade AVG-Grade in GUI
+        # => Lade Zahl "AVG-Grade" in Overlay Label
         self.overlay_label = QtWidgets.QLabel(
             str(course_of_study_data.get_average_grade(exam_data)),
             parent=self.frame_avg_grades_chart_small)
@@ -296,6 +293,24 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.overlay_label.setGeometry(self.frame_avg_grades_chart_small.rect())
 
         self.frame_avg_grades_chart_small.resizeEvent = self.update_overlay_size
+
+        # Überlagerndes QLabel für "Verbleibende Woche"-Zahl über Weeks Left Frame
+        # => Lade Zahl "Weeks Left" in Overlay Label
+        self.overlay_label_right = QtWidgets.QLabel(
+            str(semester_data.get_remaining_weeks()),
+            parent=self.frame_3)
+        self.overlay_label_right.setStyleSheet("""
+                    font: 700 60pt \"Graduate\";\n
+                    color: rgba(49, 149, 43, 1);
+                    background-color: rgba(49, 149, 43, 0);
+                    """)
+        self.overlay_label_right.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+        self.overlay_label_right.resize(self.frame_3.size())
+        self.overlay_label_right.setAutoFillBackground(False)
+        self.overlay_label_right.raise_()
+        self.overlay_label_right.setGeometry(self.frame_3.rect())
+
+        self.frame_3.resizeEvent = self.update_overlay_size_right
 
         # PushButtons Verknüpfung zu Dialogs
         self.pushButton_add_course.clicked.connect(self.open_add_course_dialog)
@@ -428,6 +443,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def update_overlay_size(self, event):
         self.overlay_label.setGeometry(self.frame_avg_grades_chart_small.rect())
         event.accept()
+    def update_overlay_size_right(self, event):
+        self.overlay_label_right.setGeometry(self.frame_3.rect())
+        event.accept()
 
     # Funktionen zum öffnen und arbeiten mit den Dialogs
     def open_add_grade_dialog(self):
@@ -526,6 +544,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             # Update Remaining Weeks Pie Chart
             remaining_weeks_pie_chart.update_charts(remaining_weeks_semester=semester_data.get_remaining_weeks())
 
+            # Update Weeks Left Anzeige rechts oben
+            semester_data.update_data()
+            self.overlay_label_right.setText(str(semester_data.get_remaining_weeks()))
+
+            # Update Weeks Left (rechts oben) Anzeigen Done und Open
             self.label_semester_counter_number_right.setText(str(semester_data.get_passed_weeks()))
             self.label_semester_counter_number_left.setText(str(semester_data.get_remaining_weeks()))
 

@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 from typing import Optional
-from datetime import datetime, date, timedelta
+from datetime import date, timedelta
 import matplotlib
-import matplotlib.pyplot as plt
+
 from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
 from PyQt6.QtWidgets import QWidget
@@ -50,7 +50,7 @@ class University:
 @dataclass
 class Student:
     name: str
-    student_number: int
+    student_number: str
     university: Optional[object] = None
     course_of_study: Optional[object] = None
     learning_streaks: Optional[object] = None
@@ -145,6 +145,12 @@ class CourseOfStudy:
         self.all_grades = []
         self.current_avg_grade = 0
         self.last_avg_grade = 0
+
+    def get_all_grades(self, data):
+        grade_data = data.load()
+        all_grades = [float(value[1]) for value in grade_data.values() if value[0] == "Passed"]
+        self.all_grades = all_grades
+        return self.all_grades
 
     def get_average_grade(self, data):
         """Berechnet die Durchschnittsnote auf Basis aller bisher erhaltenen Noten"""
@@ -450,7 +456,7 @@ class charts(FigureCanvasQTAgg):
         self.draw()
 
     def update_charts(self, **kwargs):
-        if self.chart_type =="line":
+        if self.chart_type == "line":
             self.y_values = kwargs.get("y_values", [])
             self.average_grade = kwargs.get("average_grade", 0)
             self.avg_grade_line = kwargs.get("avg_grade_line", False)
@@ -529,16 +535,13 @@ print(course_of_study_data)
 print(student_data)
 
 
-# Bis jetzt habe ich die ganzen Listen und verbindungen wie
-# Aggregation und soweiter noch nicht beachtet. Also zum Beispiel add_student oder add_semester bei CourseOfStudy
-# muss erstmal schauen, ob ich das brauche und für was...(ich könnte auf jeden fall etwas via print-fnkt.
-# im terminal ausgeben
-
-
-# Wenn ein Course failed ist, sollte ein counter zählen bis maximal drei, dann meldung geben (wenn ich das überhaupt
-# noch einbauen will
 
 #ALS NÄCHSTES
+
+# Beim Start des Dashboards nimmt die Down und Up Pfeile immer Null als erste Referenz und nicht die letzte AVG-Grade
+
+# Code durchgehen - Anmerkungen ergänzen wo nötig und sinnvoll
+# Notfalls Variabel-namen ändern, wenn verwirrend
 
 # Fehlerüberprüfung / Debugging
 
