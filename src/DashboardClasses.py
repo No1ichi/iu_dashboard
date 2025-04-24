@@ -6,7 +6,7 @@ import matplotlib
 from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
 from PyQt6.QtWidgets import QWidget
-from DataManagingClasses import menu_data, exam_data, study_data, user_data
+from src.DataManagingClasses import menu_data, exam_data, study_data, user_data
 
 matplotlib.use("QtAgg")
 
@@ -174,6 +174,12 @@ class CourseOfStudy:
     def get_grade_difference(self):
         """Berechnet die Differenz zwischen alter Durchschnittsnote und neuer Durchschnittsnote"""
         return round(self.last_avg_grade - self.current_avg_grade, 2)
+
+    def save_avg_grades(self, data):
+        target_data = data.load()
+        target_data.update({"Average Grade": self.current_avg_grade})
+        target_data.update({"Last AVG Grade": self.last_avg_grade})
+
 
     def add_semester(self, semester):
         """Fügt dem Studiengang ein Semester hinzu"""
@@ -539,12 +545,16 @@ print(student_data)
 #ALS NÄCHSTES
 
 # Beim Start des Dashboards nimmt die Down und Up Pfeile immer Null als erste Referenz und nicht die letzte AVG-Grade
-
+# Man kann bei AddGrade eine Note Speichern auch wenn kein Course ausgewählt ist
+# - wahrscheinlich muss ich die aktuelle avg_grade irgendwo speichern?
 # Code durchgehen - Anmerkungen ergänzen wo nötig und sinnvoll
 # Notfalls Variabel-namen ändern, wenn verwirrend
 
 # Fehlerüberprüfung / Debugging
+# - Learned Today Counter kann manipuliert werden durch mehrmaliges drücken von learned today
 
+# In Windows 11 neue venv ohne irgendwas erstellen. Programm über GitHub runterladen und in der venv starten.
+# Ausprobieren, ob es direkt läuft bzw. was ich dazu brauche (müssen die ganzen bibliotheken vorhanden sein?)
 # exe-Datei erstellen (PyQT6 Buch eintrag nachlesen)
 
 # Readme-Datei erstellen "Anleitung"

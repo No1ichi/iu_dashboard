@@ -99,7 +99,7 @@ class Ui_NewUserData(object):
         _translate = QtCore.QCoreApplication.translate
         NewUserData.setWindowTitle(_translate("NewUserData", "Add User Data"))
         self.label_University.setText(_translate("NewUserData", "University"))
-        self.label_StudentName.setText(_translate("NewUserData", "Name"))
-        self.label_StudentNumber.setText(_translate("NewUserData", "Student-Number"))
+        self.label_StudentName.setText(_translate("NewUserData", "Student Name"))
+        self.label_StudentNumber.setText(_translate("NewUserData", "Student Number"))
         self.label_CourseOfStudy.setText(_translate("NewUserData", "Course of Study"))
         self.lineEdit_StudentName.setPlaceholderText(_translate("NewUserData", "First Name Last Name"))

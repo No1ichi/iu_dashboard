@@ -1,6 +1,10 @@
 import json
 import os
 
+def get_data_path(filename):
+    base_path = os.path.dirname(os.path.abspath(__file__))
+    return os.path.normpath(os.path.join(base_path, "..", "data", filename))
+
 class JSONFile:
     def __init__(self, filename: str, default_type: str = "dict"):
         """Erstellt eine JSON-Datei, falls sie nicht existiert.
@@ -9,6 +13,7 @@ class JSONFile:
         self.filename = filename
         self.default_type = default_type
         self.new_file()
+
 
     def new_file(self):
         """Erstellt eine leere JSON-Datei mit {} oder [] je nach default_type."""
@@ -98,9 +103,9 @@ class InputHandler:
 
 
 #JSON-Files zur Datenspeicherung
-user_data = JSONFile("data/userdata.json")
-study_data = JSONFile("data/studydata.json")
-exam_data = JSONFile("data/examdata.json")
-menu_data = JSONFile("data/menu_data.json")
+user_data = JSONFile(get_data_path("userdata.json"))
+study_data = JSONFile(get_data_path("studydata.json"))
+exam_data = JSONFile(get_data_path("examdata.json"))
+menu_data = JSONFile(get_data_path("menu_data.json"))
 
 input_handler = InputHandler()

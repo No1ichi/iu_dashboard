@@ -85,6 +85,6 @@ class Ui_AddGrade(object):
     def retranslateUi(self, AddGrade):
         _translate = QtCore.QCoreApplication.translate
         AddGrade.setWindowTitle(_translate("AddGrade", "Add Grade"))
-        self.label_Modul.setText(_translate("AddGrade", "Modul"))
-        self.label_Passed.setText(_translate("AddGrade", "Passed"))
+        self.label_Modul.setText(_translate("AddGrade", "Course"))
+        self.label_Passed.setText(_translate("AddGrade", "Status"))
         self.label_Grade.setText(_translate("AddGrade", "Grade"))

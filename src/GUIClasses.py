@@ -2,15 +2,16 @@ from PyQt6 import QtWidgets, QtCore
 from PyQt6.QtWidgets import QMainWindow, QDialog, QMessageBox, QGraphicsOpacityEffect, QDialogButtonBox
 from PyQt6.QtGui import QPixmap
 from PyQt6.QtCore import Qt
+import os
 
 
-from MainWindow import Ui_MainWindow
-from ui_widget_addcourse import Ui_AddCourse
-from ui_widget_addgrade import Ui_AddGrade
-from ui_widget_addsemester import Ui_AddSemester
-from ui_widget_adduserdata import Ui_NewUserData
-from DashboardClasses import charts, uni_data, student_data, semester_data, course_of_study_data, course_data, learning_tracker
-from DataManagingClasses import menu_data, exam_data, study_data, user_data, input_handler
+from ui.MainWindow import Ui_MainWindow
+from ui.ui_widget_addcourse import Ui_AddCourse
+from ui.ui_widget_addgrade import Ui_AddGrade
+from ui.ui_widget_addsemester import Ui_AddSemester
+from ui.ui_widget_adduserdata import Ui_NewUserData
+from src.DashboardClasses import charts, uni_data, student_data, semester_data, course_of_study_data, course_data, learning_tracker
+from src.DataManagingClasses import menu_data, exam_data, study_data, user_data, input_handler, get_data_path
 from datetime import date
 
 # Course Status Pie-Chart
@@ -322,6 +323,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.label_grade_move_pos.setText(str(course_of_study_data.get_grade_difference()))
         self.label_grade_move_neg.setText(str(course_of_study_data.get_grade_difference()))
 
+        #course_of_study_data.get_average_grade(exam_data)
+        #course_of_study_data.get_last_avg_grade(exam_data)
+
         grade_diff = course_of_study_data.get_grade_difference()
         if grade_diff < 0:
             self.set_arrow_visibility("down")
@@ -369,6 +373,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     # Überprüfung ob LearningStatus Buttons schon gedrückt wurden oder nicht
     def learning_tracker_button_push(self, status):
+        """Reaktion auf Button Push Not Learned Today:( Learned Today:) / LearningStatus""""
         loaded_user_data = user_data.load()
         button_info = loaded_user_data.get("Learning Status Button", False)
         if button_info == False:
@@ -381,6 +386,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.info_message(message, status)
 
     def info_message(self, message, new_status):
+        """Info Dialog bei mehrfachem Learning Tracker Button Push """
         dialog_box = QMessageBox(self)
         dialog_box.setIcon(QMessageBox.Icon.Question)
         dialog_box.setWindowTitle("Info")
@@ -402,18 +408,21 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def setup_arrow_indicators(self):
         """Initialisiert die Pfeilbilder und ihre Sichtbarkeit"""
         # Pfeile laden
+        green_arrow = os.path.join(os.path.dirname(__file__), "..", "icons", "green_arrow.png")
+        red_arrow = os.path.join(os.path.dirname(__file__), "..", "icons", "red_arrow.png")
+        # Pfeileinstellungen
         arrow_size = 75
-        pixmap_arrow_up = QPixmap("icons/green_arrow.png").scaled(
+        pixmap_arrow_up = QPixmap(green_arrow).scaled(
             arrow_size, arrow_size,
             QtCore.Qt.AspectRatioMode.KeepAspectRatio,
             QtCore.Qt.TransformationMode.SmoothTransformation
         )
-        pixmap_arrow_down = QPixmap("icons/red_arrow.png").scaled(
+        pixmap_arrow_down = QPixmap(red_arrow).scaled(
             arrow_size, arrow_size,
             QtCore.Qt.AspectRatioMode.KeepAspectRatio,
             QtCore.Qt.TransformationMode.SmoothTransformation
         )
-
+        # Alignment Setting - Zentriert
         self.label_arrow_up.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.label_arrow_down.setAlignment(Qt.AlignmentFlag.AlignCenter)
 

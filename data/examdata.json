@@ -1,7 +1,7 @@
 {
     "": [
         "Passed",
-        "6"
+        "3"
     ],
     "Artificial Intelligence": [
         "Passed",
@@ -13,22 +13,14 @@
     ],
     "Einf\u00fchrung in die Programmierung mit Python": [
         "Passed",
-        "3"
+        "2"
     ],
     "Mathematik: Analysis": [
         "Passed",
-        "4"
+        "1"
     ],
     "Kollaboratives Arbeiten": [
         "Passed",
-        "5"
-    ],
-    "Statistik - Wahrscheinlichkeit und deskriptive Statistik": [
-        "Passed",
-        "3"
-    ],
-    "Projekt: Objektorientierte und funktionale Programmierung mit Python": [
-        "Passed",
-        "1"
+        "6"
     ]
 }

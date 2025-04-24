@@ -7,6 +7,7 @@
 
 
 from PyQt6 import QtCore, QtGui, QtWidgets
+from PyQt6.QtCore import QDate
 
 
 class Ui_AddSemester(object):
@@ -72,3 +73,5 @@ class Ui_AddSemester(object):
         AddSemester.setWindowTitle(_translate("AddSemester", "Add Semester"))
         self.label_SemesterNumber.setText(_translate("AddSemester", "Semester Number"))
         self.label_StartDate.setText(_translate("AddSemester", "Start Date"))
+        self.dateEdit_StartDate.setDate(QDate.currentDate())
+
