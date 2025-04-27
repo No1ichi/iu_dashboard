@@ -1,5 +1,6 @@
 import json
 import os
+from datetime import datetime
 
 def get_data_path(filename):
     """Gibt den Daten-Pfad in angepasster Art wider"""
@@ -94,14 +95,11 @@ class InputHandler:
 
     @staticmethod
     def validate_date(date_text):
-        """Überprüft, ob die Eingabe ein gültiges Datum im Format DD-MM-YYYY ist."""
-        from datetime import datetime
-        try:
-            datetime.strptime(date_text, "%Y-%m-%d")
+        """Überprüft, ob die Datums-Eingabe in der Vergangenheit liegt und liefert False wenn nicht."""
+        if datetime.strptime(date_text, "%Y-%m-%d") <= datetime.now():
             return True
-        except ValueError:
+        else:
             return False
-
 
 #JSON-Files zur Datenspeicherung
 user_data = JSONFile(get_data_path("userdata.json"))

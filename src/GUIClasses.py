@@ -10,7 +10,7 @@ from ui.ui_widget_addsemester import Ui_AddSemester
 from ui.ui_widget_adduserdata import Ui_NewUserData
 from src.DashboardClasses import Charts, uni_data, student_data, semester_data, course_of_study_data, course_data, learning_tracker
 from src.DataManagingClasses import menu_data, exam_data, study_data, user_data, input_handler
-from datetime import date
+from datetime import date, datetime
 
 # Daten Laden für Course Status Pie-Chart
 course_data.update_data(study_data, exam_data, user_data)
@@ -101,17 +101,22 @@ class AddCourseDialog(QDialog, Ui_AddCourse):
         self.buttonBox.accepted.connect(self.save_data)
         self.buttonBox.rejected.connect(self.reject)
 
+        # OK Button anfangs deaktivieren
+        self.buttonBox.button(QDialogButtonBox.StandardButton.Ok).setEnabled(False)
+        # Überprüfen, ob passende Eingaben vorhanden sind und ggf. Button aktivieren
         self.lineEdit_ECTSPoints.textChanged.connect(self.check_input)
+        self.comboBox_ExamType.currentTextChanged.connect(self.check_input)
+        self.comboBox_CourseName.currentTextChanged.connect(self.check_input)
 
     def check_input(self):
         """Überprüft ob Eingabe in lineEdit_ECTSPoints (ECTS-Punkte) valide (Zahl) ist."""
-        text = self.lineEdit_ECTSPoints.text()
-        if input_handler.validate_number(text):
-            self.buttonBox.button(QDialogButtonBox.StandardButton.Ok).setEnabled(True)
-            print("True")
-        if not input_handler.validate_number(text):
-            self.buttonBox.button(QDialogButtonBox.StandardButton.Ok).setEnabled(False)
-            print("False")
+        ects_input = self.lineEdit_ECTSPoints.text()
+        course_name = self.comboBox_CourseName.currentText()
+        exam_name = self.comboBox_ExamType.currentText()
+
+        valid_ects_input = input_handler.validate_number(ects_input)
+
+        self.buttonBox.button(QDialogButtonBox.StandardButton.Ok).setEnabled(valid_ects_input and bool(course_name) and bool(exam_name))
 
     def save_data(self):
         """Speichert Daten Courses, ECTS-Points und Exam-Type in study data"""
@@ -157,6 +162,11 @@ class AddSemesterDialog(QDialog, Ui_AddSemester):
 
         self.buttonBox.accepted.connect(self.save_data)
         self.buttonBox.rejected.connect(self.reject)
+        # OK Button anfangs deaktivieren
+        self.buttonBox.button(QDialogButtonBox.StandardButton.Ok).setEnabled(False)
+        # Überprüfen, ob passende Eingaben vorhanden sind und ggf. Button aktivieren
+        self.dateEdit_StartDate.dateChanged.connect(self.check_input)
+        self.comboBox_SemesterNumber.currentTextChanged.connect(self.check_input)
 
     def save_data(self):
         """Speichert Daten Semester und Start-Datum in study data"""
@@ -175,6 +185,15 @@ class AddSemesterDialog(QDialog, Ui_AddSemester):
 
         self.comboBox_SemesterNumber.addItems(semesters_list)
 
+    def check_input(self):
+        sem_number = self.comboBox_SemesterNumber.currentText()
+        date_input = self.dateEdit_StartDate.date().toString("yyyy-MM-dd")
+        # Überprüfe Datumseingabe auch erwarteten Wert und keine Daten, die in der Zukunft liegen
+        valid_date = input_handler.validate_date(date_input)
+
+        self.buttonBox.button(QDialogButtonBox.StandardButton.Ok).setEnabled(valid_date and bool(sem_number))
+
+
 # Dialogklasse Add User Data
 class AddUserDataDialog(QDialog, Ui_NewUserData):
     def __init__(self, user_data, menu_data):
@@ -186,6 +205,29 @@ class AddUserDataDialog(QDialog, Ui_NewUserData):
 
         self.buttonBox.accepted.connect(self.save_data)
         self.buttonBox.rejected.connect(self.reject)
+
+        # OK Button anfangs deaktivieren
+        self.buttonBox.button(QDialogButtonBox.StandardButton.Ok).setEnabled(False)
+        # Überprüfen, ob passende Eingaben vorhanden sind und ggf. Button aktivieren
+        self.lineEdit_StudentName.textChanged.connect(self.check_input)
+        self.lineEdit_StudentNumber.textChanged.connect(self.check_input)
+        self.comboBox_University.currentTextChanged.connect(self.check_input)
+        self.comboBox_CourseOfStudy.currentTextChanged.connect(self.check_input)
+
+    def check_input(self):
+        uni_name = self.comboBox_University.currentText()
+        study_name = self.comboBox_CourseOfStudy.currentText()
+        user_name = self.lineEdit_StudentName.text()
+        user_student_nr = self.lineEdit_StudentNumber.text()
+        valid_name = input_handler.validate_text(user_name)
+        valid_number = input_handler.validate_text(user_student_nr)
+
+        self.buttonBox.button(QDialogButtonBox.StandardButton.Ok).setEnabled(
+            valid_name and
+            valid_number and
+            bool(uni_name) and
+            bool(study_name)
+        )
 
     def save_data(self):
         """Speichert Daten Universität, Student-Name, Student-Nummer und Studiumsnamen in user_data"""
@@ -208,13 +250,9 @@ class AddUserDataDialog(QDialog, Ui_NewUserData):
         self.user_data.update("Student Name", self.lineEdit_StudentName.text()),
         self.user_data.update("Student Number", self.lineEdit_StudentNumber.text()),
         self.user_data.update("Course of Study", self.comboBox_CourseOfStudy.currentText())
-        # Überprüfe, ob Student-name und Student-Nummer nicht leer ist
-        user_name = input_handler.validate_text(self.lineEdit_StudentName.text())
-        user_student_number = input_handler.validate_text(self.lineEdit_StudentNumber.text())
-        if user_name == True and user_student_number == True:
-            self.accept()
-        else:
-            print("Please enter a valid Student Name and Student Number.")
+
+        self.accept()
+
 
 
     def load_data(self):
