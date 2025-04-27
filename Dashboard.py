@@ -5,12 +5,13 @@ from datetime import date
 from PyQt6.QtWidgets import QApplication
 
 from src.DashboardClasses import learning_tracker
-from src.GUIClasses import MainWindow, AddUserDataDialog, AddSemesterDialog, AddCourseDialog, AddGradeDialog
+from src.GUIClasses import MainWindow
 from src.DataManagingClasses import user_data, exam_data, study_data, menu_data, get_data_path
 
-# Öffne JSON-File study_data und legt leere Kurs-Liste an, falls sie noch nicht vorhanden ist.
-# Kurs-Liste speichert hinzugefügte Kurse mit ECTS-Punkten und Exam-Typ ab
+# Default Werte der JSON-Dateien erstellen, falls Datei noch leer
 def initialize_defaults():
+    """Initialisiert die Default-Werte für Study-Data File, User-Data File und Exam-Data File,
+    falls sie noch nicht vorhanden sind."""
     # Initialisiere Default-Werte für studydata JSON-File
     if os.path.exists(get_data_path("studydata.json")):
         study_data_file = study_data.load()
@@ -54,7 +55,7 @@ def initialize_defaults():
         else:
             pass
 
-# Resetten des LearningTracker Times
+# Resetten des LearningTracker Button-Status bei neuem Tag
 learning_track_data = user_data.load()
 lt_date = learning_track_data.get("Learning Status Date")
 today = str(date.today())
@@ -67,13 +68,6 @@ else:
 
 
 initialize_defaults()
-
-
-dialog_user_data = AddUserDataDialog(user_data, menu_data)
-dialog_add_semester = AddSemesterDialog(study_data)
-dialog_add_course = AddCourseDialog(study_data)
-dialog_add_grade = AddGradeDialog(study_data, exam_data)
-
 
 app = QApplication(sys.argv)
 window = MainWindow(user_data, study_data, exam_data, menu_data)

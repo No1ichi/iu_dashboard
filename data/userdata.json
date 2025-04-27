@@ -1,15 +1,17 @@
 {
-    "Learning Status": true,
-    "Learning Status Button": true,
+    "Learning Status": false,
+    "Learning Status Button": false,
     "University": [
         "IU Internationale Hochschule",
         "Juri-Gagarin-Ring 152",
         "99084 Erfurt"
     ],
-    "Student Name": "Bastian Schwab",
-    "Student Number": "Bastian Schwab",
+    "Student Name": "asd",
+    "Student Number": "asd",
     "Course of Study": "Angewandte K\u00fcnstliche Intelligenz",
-    "Learning Status Date": "2025-04-24",
-    "Current Streak": 4,
-    "Best Streak": 4
+    "Learning Status Date": "",
+    "Current Streak": 0,
+    "Best Streak": 0,
+    "Average Grade": 1.76,
+    "Last AVG Grade": 1.75
 }

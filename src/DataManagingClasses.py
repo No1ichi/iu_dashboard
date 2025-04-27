@@ -2,6 +2,7 @@ import json
 import os
 
 def get_data_path(filename):
+    """Gibt den Daten-Pfad in angepasster Art wider"""
     base_path = os.path.dirname(os.path.abspath(__file__))
     return os.path.normpath(os.path.join(base_path, "..", "data", filename))
 
@@ -84,7 +85,7 @@ class InputHandler:
 
     @staticmethod
     def validate_grade(value):
-        """Überprüft, ob die Eingabe eine gültige Note ist in Range 1 - 6"""
+        """Überprüft, ob die Eingabe eine gültige Note ist in Range 1-6"""
         try:
             grade = float(value)
             return 1.0 <= grade <= 6.0

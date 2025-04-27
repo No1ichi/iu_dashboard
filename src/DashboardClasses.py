@@ -23,7 +23,8 @@ class University:
         return f"""{self.name}\n{self.street}\n{self.town}"""
 
     def add_student(self, new_student):
-        """Fügt einen Studenten zur Liste der studierenden der Universität hinzu und fügt diese Universität zum Studenten hinzu"""
+        """Fügt einen Studenten zur Liste der Studierenden der Universität hinzu
+         und fügt diese Universität zum Studenten hinzu"""
         if new_student.university is None:
             self.students.append(new_student)
             new_student.university = self
@@ -46,7 +47,6 @@ class University:
     def __repr__(self):
         return self.name
 
-
 @dataclass
 class Student:
     name: str
@@ -64,8 +64,8 @@ class Student:
     def get_learning_streaks(self):
         """Gibt den aktuellen Lern-Streak und den besten Lern-Streak wieder, soweit vorhanden"""
         if self.learning_streaks is None:
-            return "Keine Lerndaten vorhanden"
-        print(self.learning_streaks)
+            return print("Keine Lerndaten vorhanden")
+        return self.learning_streaks
     def get_course_of_study(self):
         """Gibt den aktuellen Studiengang wieder, soweit vorhanden"""
         if self.course_of_study is None:
@@ -81,7 +81,6 @@ class Student:
                 f"Course of Study: {self.course_of_study}\n"
                 f"Learning Streak: {self.learning_streaks}")
 
-
 class LearningTracker:
     def __init__(self):
         self._current_streak = 0
@@ -94,16 +93,16 @@ class LearningTracker:
     def __repr__(self):
         return f"Calculated current streak: {self._current_streak}\nCalculated best streak: {self._best_streak}"
 
-
     def calculating_streak(self, data):
-        """Berechnet die dauer des aktuellen Streaks und speichert die Daten.
-                    Falls der Streak unterbrochen wird, wird der Counter wieder auf 0 gesetzt.
-                    Ist der aktuelle Streak größer als der beste Streak, wird der beste Streak entsprechend aktualisiert"""
+        """Berechnet die Dauer des aktuellen Streaks und speichert die Daten.
+        Falls der Streak unterbrochen wird, wird der Counter wieder auf 0 gesetzt.
+        Ist der aktuelle Streak größer als der beste Streak, wird der beste Streak entsprechend aktualisiert"""
         loaded_data = data.load()
         button_info = loaded_data.get("Learning Status Button")
         learning_date = loaded_data.get("Learning Status Date", "")
 
-        # Nur zählen, wenn wirklich heute gelernt wurde
+        # Nur zählen, wenn wirklich heute gelernt wurde.
+        # Check Button Info = True und Learning Datum = Heute
         if button_info is True and learning_date == str(date.today()):
             learning_status = loaded_data.get("Learning Status")
             if learning_status == True:
@@ -116,20 +115,23 @@ class LearningTracker:
             else:
                 user_data.update("Current Streak", 0)
         else:
-            # Heute noch nicht gelernt → nichts tun
+            # Heute noch nicht gelernt => nichts tun
             pass
 
     def load_data(self, user_data):
+        """Updated current_streak und best_streak mit Daten aus user_data File"""
         loaded_data = user_data.load()
         self._current_streak = loaded_data.get("Current Streak")
         self._best_streak = loaded_data.get("Best Streak")
 
     def current_streak(self, user_data):
+        """Gibt aktuellen current_streak wieder. Nutzt Methode load_data() für aktuelle Daten"""
         data = user_data
         self.load_data(data)
         return self._current_streak
 
     def best_streak(self, user_data):
+        """Gibt aktuellen best_streak wieder. Nutzt Methode load_data() für aktuelle Daten"""
         data = user_data
         self.load_data(data)
         return self._best_streak
@@ -147,28 +149,32 @@ class CourseOfStudy:
         self.last_avg_grade = 0
 
     def get_all_grades(self, data):
+        """Gibt alle Noten zurück, gespeichert in self.all_grades, geladen aus exam_data.json"""
         grade_data = data.load()
         all_grades = [float(value[1]) for value in grade_data.values() if value[0] == "Passed"]
         self.all_grades = all_grades
         return self.all_grades
 
-    def get_average_grade(self, data):
+    def get_average_grade(self, exam_data, user_data):
         """Berechnet die Durchschnittsnote auf Basis aller bisher erhaltenen Noten"""
-        grade_data = data.load()
+        grade_data = exam_data.load()
         all_grades = [float(value[1]) for value in grade_data.values() if value[0] == "Passed"]
         avg_grade = sum(all_grades) / (len(all_grades) if len(all_grades) > 0 else 1)
         self.all_grades = all_grades
         self.current_avg_grade = round(avg_grade, 2)
+        self.save_avg_grades(user_data)
         return self.current_avg_grade
 
-    def get_last_avg_grade(self, data):
-        grade_data = data.load()
+    def get_last_avg_grade(self, exam_data, user_data):
+        """Gibt die letzte Durchschnittsnote zurück. Bezieht alle Noten, bis auf die letzte in Berechnung ein"""
+        grade_data = exam_data.load()
         all_grades = [float(value[1]) for value in grade_data.values() if value[0] == "Passed"]
         all_grades_except_last = all_grades[:-1]
         last_avg_grade = (sum(all_grades_except_last)
                           / (len(all_grades_except_last)
                              if len(all_grades_except_last) > 0 else 1))
         self.last_avg_grade = round(last_avg_grade, 2)
+        self.save_avg_grades(user_data)
         return self.last_avg_grade
 
     def get_grade_difference(self):
@@ -176,10 +182,10 @@ class CourseOfStudy:
         return round(self.last_avg_grade - self.current_avg_grade, 2)
 
     def save_avg_grades(self, data):
-        target_data = data.load()
-        target_data.update({"Average Grade": self.current_avg_grade})
-        target_data.update({"Last AVG Grade": self.last_avg_grade})
-
+        """Speichert Average Grade:self.current_avg_grade und
+        Last AVG Grade:self.last_avg_grade als dict in übergebene JSON-Datei"""
+        data.update("Average Grade", self.current_avg_grade)
+        data.update("Last AVG Grade", self.last_avg_grade)
 
     def add_semester(self, semester):
         """Fügt dem Studiengang ein Semester hinzu"""
@@ -189,25 +195,31 @@ class CourseOfStudy:
             self.semesters.append(semester)
 
     def add_student(self, new_student):
-        """Fügt einen Studenten zur Liste dieses Studiengangs hinzu und fügt diesen Studiengang zum Studenten hinzu"""
+        """Fügt einen Studenten zur Liste dieses Studiengangs hinzu
+        und fügt diesen Studiengang zum Studenten hinzu"""
         if new_student.course_of_study is None:
             self.students.append(new_student)
             new_student.course_of_study = self.name
         else:
             print("Student ist schon in einem anderen Studiengang eingeschrieben")
 
-    def update_data(self, user_data):
-        loaded_user_data = user_data.load()
-        loaded_menu_data = menu_data.load()
-        self.name = loaded_user_data.get("Course of Study", "")
-        if self.name == "" or self.name not in loaded_menu_data:
+    def update_data(self, user_data, menu_data):
+        """Setzt self.name, self.num_semesters und self.ects_points, falls vorhanden.
+        Ansonsten werden Default-Werte gesetzt."""
+        new_user_data = user_data.load()
+        new_menu_data = menu_data.load()
+        self.name = new_user_data.get("Course of Study", "")
+        if self.name == "" or self.name not in new_menu_data:
             print("Studiengang nicht gefunden, lade default Werte")
             self.num_semesters = 0
             self.ects_points = 0
-            return
-
-        self.num_semesters = loaded_menu_data[self.name].get("semester", 0)
-        self.ects_points = loaded_menu_data[self.name].get("ects_points", 0)
+            return False
+        else:
+            self.num_semesters = new_menu_data[self.name].get("semester", 0)
+            self.ects_points = new_menu_data[self.name].get("ects_points", 0)
+            self.last_avg_grade = new_user_data.get("Last AVG Grade", 0)
+            self.current_avg_grade = new_user_data.get("Average Grade", 0)
+            return True
 
     def __repr__(self):
         return f"Course of Study Name: {self.name}"
@@ -227,7 +239,6 @@ class Semester:
         remaining_weeks = round((self.end_date - date.today()).days / 7)
         if remaining_weeks > 0:
             return remaining_weeks
-            print(remaining_weeks)
         else:
             return 0
 
@@ -236,18 +247,19 @@ class Semester:
         passed_weeks = round((date.today() - self.start_date).days / 7)
         if passed_weeks < 26:
             return passed_weeks
-            print(passed_weeks)
         else:
             return 26
 
     def add_module(self, course):
         """Fügt ein Modul zu einem Semester hinzu"""
         if course not in self.courses:
-            self.courses.append(course)
+            return self.courses.append(course)
         else:
-            return "Dieses Modul ist schon vorhanden"
+            return print("Dieses Modul ist schon vorhanden")
 
     def update_data(self):
+        """Aktualisiert Semesterdaten aus Study_Data.json.
+        self.start_date, self.end_date, self.semester_number."""
         self.start_date = date.fromisoformat(study_data.load().get("Start Date", "2024-01-01"))
         self.semester_number = study_data.load().get("Semester", "0")
         self.end_date = self.start_date + timedelta(weeks=26)
@@ -270,12 +282,16 @@ class Course:
         self.exam_types = []
 
     def get_all_courses(self, course_of_study):
+        """Gibt für übergebenen Studiengang alle in menu_data enthaltenen Kurse wieder """
         main_data = self.menu_data.load()
         all_available_courses = main_data.get(course_of_study, {}).get("courses", [])
         self.all_courses = all_available_courses
         return self.all_courses
 
     def get_courses_in_progress(self):
+        """Gibt alle Kurse wieder, die in Bearbeitung sind. Also via Add Course dialog hinzugefügt wurden
+        aber noch nicht abgeschlossen sind (exam data, status = passed).
+        update_data Methode vorher aufrufen."""
         load_exam_data = self.exam_data.load()
         load_study_data = self.study_data.load()
         open_course_data = load_study_data.get("Courses", [])
@@ -287,16 +303,21 @@ class Course:
         return self.courses_in_progress
 
     def get_courses_finished(self):
+        """Gibt alle erfolgreich abgeschlossenen Kurse wieder.
+        update_data Methode vorher aufrufen."""
         load_exam_data = self.exam_data.load()
         passed_courses = [key for key, value in load_exam_data.items() if value[0] == "Passed"]
         return passed_courses
 
     def update_data(self, new_study_data, new_exam_data, new_user_data):
+        """Übergibt Files an self.study_data, self.exam_data und self.user_data.
+        Ohne Ausführung sind Default-Werte dafür None!"""
         self.study_data = new_study_data
         self.exam_data = new_exam_data
         self.user_data = new_user_data
 
     def get_exam_types(self):
+        """Gibt für ausgewähltes Studium Liste an Examtypen wieder, die in menu_data hinterlegt sind."""
         if not self.user_data:
             return []
         user_info = self.user_data.load()
@@ -324,7 +345,7 @@ class ExamPerformance:
         else:
             return "No Grade Available"
 
-class charts(FigureCanvasQTAgg):
+class Charts(FigureCanvasQTAgg):
     def __init__(self,
                  chart_type="line",
                  y_values=None,
@@ -367,6 +388,7 @@ class charts(FigureCanvasQTAgg):
             self.plot_pie70_chart()
 
     def plot_line_chart(self):
+        """Erstellt ein Line Chart mit angepasstem Styling und Werten."""
         ax = self.axes
         ax.clear()
         ax.plot(self.x_values, self.y_values, self.chart_color)
@@ -388,6 +410,7 @@ class charts(FigureCanvasQTAgg):
             ax.axhline(self.average_grade, color="blue", linestyle="--", linewidth=2)
 
     def plot_pie_chart(self):
+        """Erstellt ein Pie Chart mit angepasstem Styling und Werten."""
         ax = self.axes
         ax.clear()
         labels = ("Done", "In Progress", "Open")
@@ -408,21 +431,23 @@ class charts(FigureCanvasQTAgg):
         )
 
     def plot_pie70_chart(self):
+        """Erstellt zwei spezielle Pie Charts (ein äußerer und ein innerer)
+        mit angepasstem Styling und Werten."""
         ax = self.axes
         ax.clear()
-        #Total weeks = 70% from Pie-Charts
+        #Total weeks = 70% von Pie-Chart
         remaining = self.remaining_weeks_semester or 0
         remaining_converted = 70 / self.total_weeks_semester * remaining
         passed_converted = 70 - remaining_converted
 
         size = 0.3
-        #values outer ring - [invisible 15%, red-range, yellow-range, green-range, invisible 15%]
+        #Werte äußerer Ring - [invisible 15%, red-range, yellow-range, green-range, invisible 15%]
         vals_o = [15, 3, 10, 57, 15]
-        #values inner ring - [invisible 15%, green-range, grey-range, invisible 15%]
+        #Werte innerer Ring - [invisible 15%, green-range, grey-range, invisible 15%]
         #green-range + grey-range := 70%!
         vals_i = [15, remaining_converted, passed_converted, 15]
 
-        #Specs and Style outer ring
+        #Specs und Style äußerer Ring
         ax.pie(
             vals_o,
             radius=1,
@@ -430,7 +455,7 @@ class charts(FigureCanvasQTAgg):
             wedgeprops=dict(width=0.05, edgecolor='none'),
             startangle=270
         )
-        #Specs and Style inner ring
+        #Specs und Style innerer Ring
         ax.pie(
             vals_i,
             radius=0.92,
@@ -447,10 +472,10 @@ class charts(FigureCanvasQTAgg):
         #Opacity für Chart-Linie/Graph
         for line in ax.get_lines():
             line.set_alpha(alpha)
-        #Opacity für X-Achse und Y-Achse
+        #Opacity für x-Achse und y-Achse
         for spine in ["left", "bottom"]:
             ax.spines[spine].set_alpha(alpha)
-        #Opacity für Y-Achsen-Werte
+        #Opacity für y-Achsen-Werte
         for label in ax.get_yticklabels():
             label.set_alpha(alpha)
         #Opacity für Achsen-Striche "ticks"
@@ -462,6 +487,7 @@ class charts(FigureCanvasQTAgg):
         self.draw()
 
     def update_charts(self, **kwargs):
+        """Methode zum Updaten und neuen Zeichnen der Charts."""
         if self.chart_type == "line":
             self.y_values = kwargs.get("y_values", [])
             self.average_grade = kwargs.get("average_grade", 0)
@@ -489,7 +515,7 @@ if loaded_user_data != {}:
 else:
     uni_data = University("N/A", "N/A", "N/A")
 
-# Erstellen der Student-Instanz aus vorhandenen Daten oder Standrad-Daten falls keine Daten vorhanden sind
+# Erstellen der Student-Instanz aus vorhandenen Daten oder Standard-Daten falls keine Daten vorhanden sind
 if loaded_user_data != {}:
     loaded_student_name = loaded_user_data.get("Student Name", "N/A")
     loaded_student_number = loaded_user_data.get("Student Number", "N/A")
@@ -511,6 +537,7 @@ if loaded_CoS_name and loaded_CoS_name in loaded_menu_data:
     loaded_num_semesters = loaded_menu_data[loaded_CoS_name].get("semester", 0)
     loaded_ects_points = loaded_menu_data[loaded_CoS_name].get("ects_points", 0)
     course_of_study_data = CourseOfStudy(loaded_CoS_name, loaded_num_semesters, loaded_ects_points)
+    course_of_study_data.update_data(user_data, menu_data)
 else:
     print("Keine gültigen Studiengangdaten gefunden – Default-Werte werden verwendet.")
     course_of_study_data = CourseOfStudy("N/A", 0, 0)
@@ -543,12 +570,6 @@ print(student_data)
 
 
 #ALS NÄCHSTES
-
-# Beim Start des Dashboards nimmt die Down und Up Pfeile immer Null als erste Referenz und nicht die letzte AVG-Grade
-# Man kann bei AddGrade eine Note Speichern auch wenn kein Course ausgewählt ist
-# - wahrscheinlich muss ich die aktuelle avg_grade irgendwo speichern?
-# Code durchgehen - Anmerkungen ergänzen wo nötig und sinnvoll
-# Notfalls Variabel-namen ändern, wenn verwirrend
 
 # Fehlerüberprüfung / Debugging
 # - Learned Today Counter kann manipuliert werden durch mehrmaliges drücken von learned today
