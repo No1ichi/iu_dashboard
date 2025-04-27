@@ -572,7 +572,6 @@ print(student_data)
 #ALS NÄCHSTES
 
 # Fehlerüberprüfung / Debugging
-# - Learned Today Counter kann manipuliert werden durch mehrmaliges drücken von learned today
 
 # In Windows 11 neue venv ohne irgendwas erstellen. Programm über GitHub runterladen und in der venv starten.
 # Ausprobieren, ob es direkt läuft bzw. was ich dazu brauche (müssen die ganzen bibliotheken vorhanden sein?)
