@@ -4,13 +4,13 @@
     "Learning Status": false,
     "Learning Status Button": false,
     "University": [
-        "Name",
-        "Street",
-        "Town"
+        "IU Internationale Hochschule",
+        "Juri-Gagarin-Ring 152",
+        "99084 Erfurt"
     ],
-    "Student Name": "",
-    "Student Number": "",
-    "Course of Study": "",
+    "Student Name": "asd",
+    "Student Number": "asd",
+    "Course of Study": "Angewandte K\u00fcnstliche Intelligenz",
     "Learning Status Date": "",
     "Current Streak": 0,
     "Best Streak": 0

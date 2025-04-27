@@ -1,11 +1,29 @@
 import json
 import os
+import sys
 from datetime import datetime
 
+def get_base_path():
+    if getattr(sys, 'frozen', False):
+        # Im One-Dir-Modus: exe und data/ liegen im selben Ordner
+        return os.path.dirname(sys.executable)
+    else:
+        # im Entwicklungs-Modus
+        return os.path.abspath(
+            os.path.join(os.path.dirname(__file__), os.pardir)
+        )
+
 def get_data_path(filename):
-    """Gibt den Daten-Pfad in angepasster Art wider"""
-    base_path = os.path.dirname(os.path.abspath(__file__))
-    return os.path.normpath(os.path.join(base_path, "..", "data", filename))
+    base = get_base_path()
+    data_dir = os.path.join(base, "data")
+    # stell sicher, dass data_dir existiert
+    os.makedirs(data_dir, exist_ok=True)
+    return os.path.join(data_dir, filename)
+
+#def get_data_path(filename):
+#    """Gibt den Daten-Pfad in angepasster Art wider"""
+#    base_path = os.path.dirname(os.path.abspath(__file__))
+#    return os.path.normpath(os.path.join(base_path, "..", "data", filename))
 
 class JSONFile:
     def __init__(self, filename: str, default_type: str = "dict"):
