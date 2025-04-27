@@ -69,7 +69,11 @@ else:
 
 initialize_defaults()
 
-app = QApplication(sys.argv)
-window = MainWindow(user_data, study_data, exam_data, menu_data)
-window.show()
-app.exec()
+def main():
+    app = QApplication(sys.argv)
+    window = MainWindow(user_data, study_data, exam_data, menu_data)
+    window.show()
+    app.exec()
+
+if __name__ == "__main__":
+    main()

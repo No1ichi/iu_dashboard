@@ -28,8 +28,11 @@ class JSONFile:
 
     def save(self, data):
         """Speichert Daten in die JSON-Datei."""
-        with open(self.filename, "w", encoding="utf-8") as file:
-            json.dump(data, file, indent=4)
+        try:
+            with open(self.filename, "w", encoding="utf-8") as file:
+                json.dump(data, file, indent=4)
+        except IOError as error:
+            print(f"Fehler beim schreiben der Datei: {error}")
 
     def load(self):
         """Lädt die JSON-Daten aus der Datei und gibt sie zurück."""

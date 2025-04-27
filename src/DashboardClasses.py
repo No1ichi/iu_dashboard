@@ -6,7 +6,7 @@ import matplotlib
 from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
 from PyQt6.QtWidgets import QWidget
-from src.DataManagingClasses import menu_data, exam_data, study_data, user_data
+from src.DataManagingClasses import menu_data, exam_data, study_data, user_data, JSONFile
 
 matplotlib.use("QtAgg")
 
@@ -567,15 +567,4 @@ print(uni_data)
 print(course_of_study_data)
 print(student_data)
 
-
-
-#ALS NÄCHSTES
-
-# Fehlerüberprüfung / Debugging
-
-# In Windows 11 neue venv ohne irgendwas erstellen. Programm über GitHub runterladen und in der venv starten.
-# Ausprobieren, ob es direkt läuft bzw. was ich dazu brauche (müssen die ganzen bibliotheken vorhanden sein?)
-# exe-Datei erstellen (PyQT6 Buch eintrag nachlesen)
-
-# Readme-Datei erstellen "Anleitung"
 
