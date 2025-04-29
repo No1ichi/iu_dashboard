@@ -414,7 +414,9 @@ class Ui_MainWindow(object):
         self.gridLayout_5.setObjectName("gridLayout_5")
         self.pushButton_add_semester = QtWidgets.QPushButton(parent=self.frame_left_side)
         self.pushButton_add_semester.setStyleSheet("font: 700 11pt \"Graduate\";\n"
-"color: rgb(49, 149, 43);")
+                                                   "color: rgb(49, 149, 43);"
+                                                   "border-color: rgb(0, 0, 0);"
+                                                   "background-color: rgb(12, 20, 17);")
         self.pushButton_add_semester.setIconSize(QtCore.QSize(16, 16))
         self.pushButton_add_semester.setCheckable(False)
         self.pushButton_add_semester.setObjectName("pushButton_add_semester")
@@ -427,7 +429,9 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.pushButton_add_grade.sizePolicy().hasHeightForWidth())
         self.pushButton_add_grade.setSizePolicy(sizePolicy)
         self.pushButton_add_grade.setStyleSheet("font: 700 11pt \"Graduate\";\n"
-"color: rgb(49, 149, 43);")
+                                                   "color: rgb(49, 149, 43);"
+                                                   "border-color: rgb(0, 0, 0);"
+                                                   "background-color: rgb(12, 20, 17);")
         self.pushButton_add_grade.setIconSize(QtCore.QSize(16, 16))
         self.pushButton_add_grade.setObjectName("pushButton_add_grade")
         self.gridLayout_5.addWidget(self.pushButton_add_grade, 1, 1, 1, 1, QtCore.Qt.AlignmentFlag.AlignHCenter|QtCore.Qt.AlignmentFlag.AlignVCenter)
@@ -438,7 +442,9 @@ class Ui_MainWindow(object):
         self.gridLayout_5.addWidget(self.label_add_semester, 3, 0, 1, 1)
         self.pushButton_add_course = QtWidgets.QPushButton(parent=self.frame_left_side)
         self.pushButton_add_course.setStyleSheet("font: 700 11pt \"Graduate\";\n"
-"color: rgb(49, 149, 43);")
+                                                   "color: rgb(49, 149, 43);"
+                                                   "border-color: rgb(0, 0, 0);"
+                                                   "background-color: rgb(12, 20, 17);")
         self.pushButton_add_course.setObjectName("pushButton_add_course")
         self.gridLayout_5.addWidget(self.pushButton_add_course, 2, 1, 1, 1, QtCore.Qt.AlignmentFlag.AlignHCenter|QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.label_add_user_data = QtWidgets.QLabel(parent=self.frame_left_side)
@@ -458,7 +464,9 @@ class Ui_MainWindow(object):
         self.gridLayout_5.addWidget(self.label_add_grade, 1, 0, 1, 1, QtCore.Qt.AlignmentFlag.AlignLeft|QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.pushButton_add_user_data = QtWidgets.QPushButton(parent=self.frame_left_side)
         self.pushButton_add_user_data.setStyleSheet("font: 700 11pt \"Graduate\";\n"
-"color: rgb(49, 149, 43);")
+                                                   "color: rgb(49, 149, 43);"
+                                                   "border-color: rgb(0, 0, 0);"
+                                                   "background-color: rgb(12, 20, 17);")
         self.pushButton_add_user_data.setObjectName("pushButton_add_user_data")
         self.gridLayout_5.addWidget(self.pushButton_add_user_data, 5, 1, 1, 1, QtCore.Qt.AlignmentFlag.AlignHCenter|QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.verticalLayout_14.addLayout(self.gridLayout_5)
