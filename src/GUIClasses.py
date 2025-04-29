@@ -422,7 +422,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             user_data.update("Learning Status", status)
             learning_tracker.calculating_streak(data=self.user_data)
         elif button_info == True:
-            message = "Achtung!\nEs wurden heute schon Learning-Daten gespeichert.\nResettet Counter auf 0 oder erhöht um 1\nDaten überschreiben? "
+            message = ("Achtung!\nEs wurden heute schon Learning-Daten gespeichert."
+                       "\nResettet Counter auf 0 oder erhöht um 1\nDaten überschreiben? ")
             self.info_message(message, status)
 
     def info_message(self, message, new_status):
@@ -434,6 +435,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         dialog_box.setStandardButtons(
             QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
         )
+        dialog_box.setStyleSheet("color: rgb(49, 149, 43);border-color: rgb(0, 0, 0);"
+                                 "background-color: rgb(9, 20, 17);")
         button = dialog_box.exec()
 
         if button == QMessageBox.StandardButton.Yes:

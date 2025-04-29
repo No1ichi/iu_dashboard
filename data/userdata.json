@@ -2,7 +2,7 @@
     "Average Grade": 0.0,
     "Last AVG Grade": 0,
     "Learning Status": false,
-    "Learning Status Button": false,
+    "Learning Status Button": true,
     "University": [
         "IU Internationale Hochschule",
         "Juri-Gagarin-Ring 152",
@@ -11,7 +11,7 @@
     "Student Name": "asd",
     "Student Number": "asd",
     "Course of Study": "Angewandte K\u00fcnstliche Intelligenz",
-    "Learning Status Date": "",
+    "Learning Status Date": "2025-04-29",
     "Current Streak": 0,
     "Best Streak": 0
 }
