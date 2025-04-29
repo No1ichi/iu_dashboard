@@ -5,7 +5,7 @@ from datetime import datetime
 
 def get_base_path():
     if getattr(sys, 'frozen', False):
-        # Im One-Dir-Modus: exe und data/ liegen im selben Ordner
+        # im One-Dir-Modus
         return os.path.dirname(sys.executable)
     else:
         # im Entwicklungs-Modus
@@ -20,11 +20,6 @@ def get_data_path(filename):
     os.makedirs(data_dir, exist_ok=True)
     return os.path.join(data_dir, filename)
 
-#def get_data_path(filename):
-#    """Gibt den Daten-Pfad in angepasster Art wider"""
-#    base_path = os.path.dirname(os.path.abspath(__file__))
-#    return os.path.normpath(os.path.join(base_path, "..", "data", filename))
-
 class JSONFile:
     def __init__(self, filename: str, default_type: str = "dict"):
         """Erstellt eine JSON-Datei, falls sie nicht existiert.
@@ -33,7 +28,6 @@ class JSONFile:
         self.filename = filename
         self.default_type = default_type
         self.new_file()
-
 
     def new_file(self):
         """Erstellt eine leere JSON-Datei mit {} oder [] je nach default_type."""

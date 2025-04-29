@@ -66,7 +66,6 @@ if lt_date != today:
 else:
     learning_tracker.load_data(user_data)
 
-
 initialize_defaults()
 
 def main():

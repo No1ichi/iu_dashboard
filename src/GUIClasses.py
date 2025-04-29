@@ -134,7 +134,7 @@ class AddCourseDialog(QDialog, Ui_AddCourse):
         self.accept()
 
     def load_data(self):
-        """Läd die aktuellen Daten aus und lädt sie in ComboBoxes ein."""
+        """Lädt die aktuellen Daten aus und lädt sie in ComboBoxes ein."""
         course_data.update_data(study_data, exam_data, user_data)
         course_of_study_data.update_data(user_data, menu_data)
         # Alle Kurse des Studiengangs auslesen

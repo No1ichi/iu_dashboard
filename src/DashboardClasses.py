@@ -136,7 +136,6 @@ class LearningTracker:
         self.load_data(data)
         return self._best_streak
 
-
 class CourseOfStudy:
     def __init__(self, name, num_semesters, ects_points):
         self.name = name
@@ -226,7 +225,6 @@ class CourseOfStudy:
     def __str__(self):
         return f"Course of Study Name: {self.name}\nSemesters: {self.num_semesters}\nECTS-Points: {self.ects_points}"
 
-
 class Semester:
     def __init__(self, semester_number, start_date_string):
         self.semester_number = semester_number
@@ -263,7 +261,6 @@ class Semester:
         self.start_date = date.fromisoformat(study_data.load().get("Start Date", "2024-01-01"))
         self.semester_number = study_data.load().get("Semester", "0")
         self.end_date = self.start_date + timedelta(weeks=26)
-
 
     def __repr__(self):
         return f"Semester Number: {self.semester_number}\nStart date: {self.start_date}\nEnd date: {self.end_date}\nModules: {self.courses}"
@@ -566,5 +563,3 @@ student_data.learning_streaks = learning_tracker
 print(uni_data)
 print(course_of_study_data)
 print(student_data)
-
-
